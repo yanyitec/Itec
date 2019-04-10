@@ -1,0 +1,11 @@
+Y:\Itec\Itec.Promises\Itec.Promises\bin\Debug\netcoreapp2.1\Itec.Promises.deps.json
+Y:\Itec\Itec.Promises\Itec.Promises\bin\Debug\netcoreapp2.1\Itec.Promises.runtimeconfig.json
+Y:\Itec\Itec.Promises\Itec.Promises\bin\Debug\netcoreapp2.1\Itec.Promises.runtimeconfig.dev.json
+Y:\Itec\Itec.Promises\Itec.Promises\bin\Debug\netcoreapp2.1\Itec.Promises.dll
+Y:\Itec\Itec.Promises\Itec.Promises\bin\Debug\netcoreapp2.1\Itec.Promises.pdb
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.csprojAssemblyReference.cache
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.csproj.CoreCompileInputs.cache
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.AssemblyInfoInputs.cache
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.AssemblyInfo.cs
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.dll
+Y:\Itec\Itec.Promises\Itec.Promises\obj\Debug\netcoreapp2.1\Itec.Promises.pdb

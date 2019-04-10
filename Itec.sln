@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4A9BB99-9955-4E7A-8BAB-569A74FD40BD}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		基础类组件.txt = 基础类组件.txt
+		架构类组件 20.txt = 架构类组件 20.txt
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itec.Metas", "Itec.Metas\Itec.Metas.csproj", "{FCD5768A-B725-4BD6-BE83-229E08287393}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FCD5768A-B725-4BD6-BE83-229E08287393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD5768A-B725-4BD6-BE83-229E08287393}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD5768A-B725-4BD6-BE83-229E08287393}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD5768A-B725-4BD6-BE83-229E08287393}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DDD4ECA-8754-468A-941D-457C27393094}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,11 @@
+Y:\Itec\Itec.Logs\Itec.Logs\bin\Debug\netcoreapp2.1\Itec.Logs.deps.json
+Y:\Itec\Itec.Logs\Itec.Logs\bin\Debug\netcoreapp2.1\Itec.Logs.runtimeconfig.json
+Y:\Itec\Itec.Logs\Itec.Logs\bin\Debug\netcoreapp2.1\Itec.Logs.runtimeconfig.dev.json
+Y:\Itec\Itec.Logs\Itec.Logs\bin\Debug\netcoreapp2.1\Itec.Logs.dll
+Y:\Itec\Itec.Logs\Itec.Logs\bin\Debug\netcoreapp2.1\Itec.Logs.pdb
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.csprojAssemblyReference.cache
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.csproj.CoreCompileInputs.cache
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.AssemblyInfoInputs.cache
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.AssemblyInfo.cs
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.dll
+Y:\Itec\Itec.Logs\Itec.Logs\obj\Debug\netcoreapp2.1\Itec.Logs.pdb

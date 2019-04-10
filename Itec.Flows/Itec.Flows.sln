@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itec.Logs", "..\Itec.Logs\Itec.Logs\Itec.Logs.csproj", "{2BFA6754-BB20-4BCB-BD79-0696F7522B69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8072822C-DD3A-4192-A1BB-82F1849A0125}"
+	ProjectSection(SolutionItems) = preProject
+		..\Itec.Logs\.gitignore = ..\Itec.Logs\.gitignore
+		工作流.docx = 工作流.docx
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itec.Flows", "Itec.Flows\Itec.Flows.csproj", "{446FF5B8-43A6-4F89-BC6B-E7D993D45662}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itec.Metadatas", "..\Itec.Metadatas\Itec.Metadatas\Itec.Metadatas.csproj", "{C5F5B299-5187-46E6-B757-FDC284CFCE18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BFA6754-BB20-4BCB-BD79-0696F7522B69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BFA6754-BB20-4BCB-BD79-0696F7522B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BFA6754-BB20-4BCB-BD79-0696F7522B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BFA6754-BB20-4BCB-BD79-0696F7522B69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{446FF5B8-43A6-4F89-BC6B-E7D993D45662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{446FF5B8-43A6-4F89-BC6B-E7D993D45662}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{446FF5B8-43A6-4F89-BC6B-E7D993D45662}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{446FF5B8-43A6-4F89-BC6B-E7D993D45662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5F5B299-5187-46E6-B757-FDC284CFCE18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5F5B299-5187-46E6-B757-FDC284CFCE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5F5B299-5187-46E6-B757-FDC284CFCE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5F5B299-5187-46E6-B757-FDC284CFCE18}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {28E7E08F-D359-4DE9-AD2A-7AC47C0E807E}
+	EndGlobalSection
+EndGlobal

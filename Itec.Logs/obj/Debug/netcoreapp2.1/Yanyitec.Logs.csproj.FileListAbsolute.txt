@@ -1,0 +1,11 @@
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.csproj.CoreCompileInputs.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.AssemblyInfoInputs.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.AssemblyInfo.cs
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\bin\Debug\netcoreapp2.1\Yanyitec.Logs.deps.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\bin\Debug\netcoreapp2.1\Yanyitec.Logs.runtimeconfig.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\bin\Debug\netcoreapp2.1\Yanyitec.Logs.runtimeconfig.dev.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\bin\Debug\netcoreapp2.1\Yanyitec.Logs.dll
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.csprojAssemblyReference.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\bin\Debug\netcoreapp2.1\Yanyitec.Logs.pdb
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.dll
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs\obj\Debug\netcoreapp2.1\Yanyitec.Logs.pdb

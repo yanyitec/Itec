@@ -1,0 +1,73 @@
+﻿=json
+用第三方的
+
+=DI
+依赖注入，代替new Service();
+
+=Logs[有壳]
+日志 记录运行过程
+
+=PromiseA [有壳]
+Promised/Ajax
+
+=Models 
+数据模型,
+
+=Flows 
+工作流
+
+=Caches [有壳]
+缓存
+
+=DbTree
+数据库中的树形结构
+
+=Scheluder[有壳]
+任务分派
+
+=Crytos 
+加密洁敏
+
+=StaticResources 
+静态资源文件读取
+
+=config 
+包含json的合并，依赖于StaticResources 
+
+=ORM 
+数据库映射 依赖于  数据模型
+
+=MVC 
+与asp.net mvc core的结合，形成一个可运行的website
+
+=WebSocket Server [有壳]
+直连服务
+
+=EventBus [有壳]
+事件总线，实现分布式的事件监听
+
+=Account/Auth/Login[有壳]
+账号与认证，包括账号同步,登录服务，认证后，session要全局可用
+主从账号机制
+
+=Application[有壳]
+会与本服务通行的其他服务器管理
+应用管理，服务器/子服务是作为一个User在认证与登录服务器中
+
+=Org[有壳]
+部门/角色/成员
+
+=Function [有壳]
+功能管理
+
+=Permission [有壳]
+授权管理
+
+=JsApplication
+前端框架
+
+core有21个
+壳有10个，
+总共31个任务
+一周完成一个，需要8个月时间
+

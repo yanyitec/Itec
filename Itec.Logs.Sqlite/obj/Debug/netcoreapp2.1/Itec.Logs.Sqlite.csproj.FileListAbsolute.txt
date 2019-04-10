@@ -1,0 +1,14 @@
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.Sqlite.deps.json
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.Sqlite.runtimeconfig.json
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.Sqlite.runtimeconfig.dev.json
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.Sqlite.dll
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.Sqlite.pdb
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.dll
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Itec.Logs.pdb
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.csprojAssemblyReference.cache
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.csproj.CoreCompileInputs.cache
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.AssemblyInfoInputs.cache
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.AssemblyInfo.cs
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.csproj.CopyComplete
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.dll
+Y:\Itec\Itec.Logs\Itec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Itec.Logs.Sqlite.pdb

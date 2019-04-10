@@ -1,0 +1,14 @@
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.deps.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.runtimeconfig.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.runtimeconfig.dev.json
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.dll
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.dll
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.pdb
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.csprojAssemblyReference.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.csproj.CoreCompileInputs.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.AssemblyInfoInputs.cache
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.AssemblyInfo.cs
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.csproj.CopyComplete
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\bin\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.pdb
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.dll
+Y:\Yanyitec\Yanyitec.Logs\Yanyitec.Logs.Sqlite\obj\Debug\netcoreapp2.1\Yanyitec.Logs.Sqlite.pdb
