@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Itec.Metas
 {
-    public class MetaClass<T> : MetaClass,IEnumerable<MetaProperty<T>>
-        //where T : class
+    public class MetaClass<T> : MetaClass, IEnumerable<IMetaProperty<T>>, IMetaClass<T>
+    //where T : class
     {
         public MetaClass(Func<JObject> configGetter=null) : base(typeof(T), configGetter) {
             
         }
         
-        public new MetaProperty<T> this[string name] {
+        public new IMetaProperty<T> this[string name] {
             get {
-                return base[name] as MetaProperty<T>;
+                return base[name] as IMetaProperty<T>;
             }
         }
 
@@ -34,7 +34,7 @@ namespace Itec.Metas
 
         
 
-        protected override MetaProperty CreateProperty(MemberInfo memberInfo)
+        protected override IMetaProperty CreateProperty(MemberInfo memberInfo)
         {
             return new MetaProperty<T>(memberInfo,this);
         }
@@ -42,9 +42,9 @@ namespace Itec.Metas
         {
             return new MetaMethod<T>(methodInfo, this);
         }
-        IEnumerator<MetaProperty<T>> IEnumerable<MetaProperty<T>>.GetEnumerator()
+        IEnumerator<IMetaProperty<T>> IEnumerable<IMetaProperty<T>>.GetEnumerator()
         {
-            return new Itec.ConvertEnumerator<MetaProperty<T>,MetaProperty>(this.Props.Values.GetEnumerator(),(src)=>(MetaProperty<T>)src);
+            return new Itec.ConvertEnumerator<IMetaProperty<T>,IMetaProperty>(this.Props.Values.GetEnumerator(),(src)=>(MetaProperty<T>)src);
         }
     }
 }

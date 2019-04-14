@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Itec.Tests
 {
@@ -18,22 +19,33 @@ namespace Itec.Tests
         }
         public DbSettings DbSettings { get; set; }
         public DbTrait DbTrait { get; set; }
-        public void CreateTable()
+        public async Task CreateTableAsync()
         {
             var db = new Database(this.DbSettings, this.DbTrait,null);
             db.DropTableIfExists<Article>();
-            db.CreateTable<Article>();
+            await db.CreateTableAsync<Article>();
             var dbSet = db.DbSet<Article>();
             var dbset = dbSet.MembersString("Id,Name,Age");
-            var article = new Article()
+            var article1 = new Article()
             {
                 Id = 1,
                 Name = "Yiy",
                 Description = "Yiy Desc",
                 Age = 20
             };
+            var article2 = new Article()
+            {
+                Id = 2,
+                Name = "Yi",
+                Description = "Yi Desc",
+                Age = 30
+            };
+            (await dbset.InsertAsync(article1)).Insert(article2);
 
-            var ok = dbset.Insert(article);
+            dbset = dbset.Query(p=>p.Name=="Yiy");
+
+            dbset.Load();
+            Console.WriteLine("Loaded record{0}",dbset.Count());
         }
     }
 }

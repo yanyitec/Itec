@@ -33,11 +33,12 @@ namespace Itec.ORMs
         
 
         ConcurrentDictionary<string, IDbSet> _DbSets;
-        public DbSet<T> DbSet<T>()
+        public IDbSet<T> DbSet<T>()
             where T:class
         {
             var t = typeof(T);
-            return _DbSets.GetOrAdd(t.Name,(tx)=>new DbSet<T>(this,this.MetaFactory) ) as DbSet<T>;
+            var internalSet= _DbSets.GetOrAdd(t.Name,(tx)=>new InternalDbSet<T>(this,this.MetaFactory.GetClass<T>() as IDbClass) ) as InternalDbSet<T>;
+            return new QueryableSet<T>(internalSet);
         }
 
         public DbConnection CreateConnection() {
@@ -281,7 +282,7 @@ namespace Itec.ORMs
             return db;
         }
 
-        public static DbSet<T> GetDbSet<T>(string dbName)
+        public static IDbSet<T> GetDbSet<T>(string dbName)
             where T:class
         {
             if (dbName != null)

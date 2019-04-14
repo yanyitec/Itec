@@ -31,7 +31,7 @@ namespace Itec.ORMs.SQLs
                     IDbProperty prop = null;
                     if (this.DbClass.FieldedProps.TryGetValue(memName, out prop))
                     {
-                        props.Add(prop.Field.Name, prop);
+                        props.Add(prop.Name, prop);
                     }
 
                 }
@@ -42,6 +42,9 @@ namespace Itec.ORMs.SQLs
 
             this.Create = new Create<T>(this);
             this.Insert = new Insert<T>(this);
+            this.Select = new Select<T>(this);
+            this.Count = new Count<T>(this);
+            this.GetById = new GetById<T>(this);
             //this.Update = new Update(model, membersString);
             //this.Select = new Select(model, membersString);
         }
@@ -79,11 +82,37 @@ namespace Itec.ORMs.SQLs
 
         public Create<T> Create { get; private set; }
         public Insert<T> Insert { get; private set; }
+        public Select<T> Select { get; private set; }
+
+        public Count<T> Count { get; private set; }
+
+        public GetById<T> GetById { get; private set; }
 
         //public Update Update { get; private set; }
 
-        //public Select Select { get; private set; }
+
 
         //public Where Where { get; private set; }
+
+        
+
+        public static string SafeString(string str)
+        {
+            return str.Replace("'", "''");//.Replace("\n","\\n").Replace("\r", "\\r");
+        }
+
+        public static string SqlValue(object value, bool nullable = false, object defaultValue = null)
+        {
+            if (value == null)
+            {
+                if (nullable) return "NULL";
+                else value = defaultValue ?? "";
+            }
+            var t = value.GetType();
+            if (t == typeof(DateTime)) return "'1790-1-1'";
+            if (t.IsClass) return "'" + SafeString(value.ToString()) + "'";
+            return value.ToString();
+
+        }
     }
 }

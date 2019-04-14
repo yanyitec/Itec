@@ -41,10 +41,10 @@ namespace Itec.ORMs.SQLs
             sb.Append("(\n");
             
             bool hasFields = false;
-            foreach (var pair in this.Sql.DbClass.FieldedProps)
+            foreach (var pair in this.Sql.AllowedProps)
             {
                 var prop = pair.Value;
-                var fieldName = pair.Key;
+                var fieldName = prop.Field.Name;
                 var sqlFieldname = this.Sql.DbTrait.SqlFieldname(fieldName);
                 if (fieldName == null) continue;
                 if (hasFields) sb.Append("\t,"); else { sb.Append("\t");hasFields = true; }

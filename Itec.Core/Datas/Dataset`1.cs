@@ -10,75 +10,68 @@ namespace Itec.Datas
     public class Dataset<T> : Data<T>, IDataset<T>
         where T : class
     {
-        internal List<T> _Items;
+        List<T> _Items;
+
+        internal protected List<T> Items {
+            get { if (_Items == null) this.Read(); return _Items; }
+            set {
+                _Items = value;
+                if (value != null) this._Current = _Items.FirstOrDefault();
+                else this._Current = null;
+            }
+        }
         T _Current;
 
-        protected Func<T> Reader;
-        protected Func<Task<T>> AsyncReader;
-        public bool IsFullfilled { get; protected set; }
-        protected Dataset(Metas.IMetaFactory metaFactory = null) : base(metaFactory) { }
-        protected Dataset(Metas.MetaClass<T> cls) : base(cls) { }
+        protected Func<IDataset<T>,List<T>> Reader;
+        protected Func<IDataset<T>,Task<List<T>>> AsyncReader;
 
-        public Dataset(Func<T> reader, Metas.IMetaFactory metaFactory = null) : base( metaFactory) {
+        protected Dataset(Metas.IMetaFactory metaFactory = null) : base(metaFactory) { }
+        protected Dataset(Metas.IMetaClass<T> cls) : base(cls) { }
+
+        public Dataset(Func<IDataset<T>,List<T>> reader, Metas.IMetaFactory metaFactory = null) : base( metaFactory) {
             Reader = reader;
 
         }
 
-        public Dataset(Func<Task<T>> reader, Metas.IMetaFactory metaFactory = null) : base(metaFactory)
+        public Dataset(Func<IDataset<T>,Task<List<T>>> reader, Metas.IMetaFactory metaFactory = null) : base(metaFactory)
         {
             AsyncReader = reader;
 
         }
 
-        internal protected T Read() {
-            if (this._Items == null) this._Items = new List<T>();
-            T item = null;
-            if (Reader != null) item = Reader();
-            else {
-                var task = AsyncReader();
+        internal protected void Read() {
+            if (this.Reader != null) this.Items = this.Reader(this);
+            else if (this.AsyncReader != null) {
+                var task = Task.Run<List<T>>(async ()=>await this.AsyncReader(this));
                 task.RunSynchronously();
-                item = task.Result;
+                this.Items = task.Result;
             }
-            if (item == null) { IsFullfilled = true; return null; }
-            if (this._Current == null) this._Current = item;
-            
-            this._Items.Add(item);
-            return item;
         }
 
-        internal protected async Task<T> ReadAsync()
+        internal protected async Task ReadAsync()
         {
-            if (this._Items == null) this._Items = new List<T>();
-            T item = null;
-            if (AsyncReader != null) item = await AsyncReader();
-            else
+            if (this.AsyncReader != null) this._Items = await this.AsyncReader(this);
+            else if (this.Reader != null)
             {
-                item = await Task.Run<T>(()=>this.Read());
+                this.Items = await Task.Run<List<T>>(()=> this.Reader(this));
                
             }
-            if (item == null) { IsFullfilled = true; return null; }
-            if (this._Current == null) this._Current = item;
-
-            this._Items.Add(item);
-            return item;
         }
         protected T Current {
             get {
                 if (_Current == null)
                 {
-                    return Read();
+                    Read();
                 }
-                else return _Current;
+                return _Current;
             }
         }
 
 
 
-        public int Count {
+        public int Length {
             get {
-                while (!this.IsFullfilled) {
-                    this.Read();
-                }
+                if (this._Items == null) this.Read();
                 return this._Items.Count;
             }
         }
@@ -87,21 +80,20 @@ namespace Itec.Datas
         {
             int index = 0;
             if (this._Items != null) {
-                foreach (var item in this._Items) {
+                foreach (var item in this.Items) {
                     eacher(item,index++);
                 }
             }
-            while (!this.IsFullfilled) {
-                eacher(this.Read(),index++);
-            }
+            
         }
 
-        DatasetEnumerator<T> _Enumerator;
+        IEnumerator<T> _Enumerator;
 
         public T Each()
         {
             if (_Enumerator == null) {
-                _Enumerator = new DatasetEnumerator<T>(this);
+                
+                _Enumerator = this.Items.GetEnumerator();
             }
             if (_Enumerator.MoveNext()) return _Enumerator.Current;
             else _Enumerator = null;
@@ -113,38 +105,24 @@ namespace Itec.Datas
             int index = 0;
             if (this._Items != null)
             {
-                foreach (var item in this._Items)
+                foreach (var item in this.Items)
                 {
                     eacher(item, index++);
                 }
             }
-            while (!this.IsFullfilled)
-            {
-                eacher(this.Read(), index++);
-            }
+            
         }
 
-        public async Task<T> EachAsync()
-        {
-            if (_Enumerator == null)
-            {
-                _Enumerator = new DatasetEnumerator<T>(this);
-            }
-            if (await _Enumerator.MoveNextAsync()) return _Enumerator.Current;
-            else _Enumerator = null;
-            return null;
-        }
+        
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new DatasetEnumerator<T>(this);
+            return this.Items.GetEnumerator();
         }
 
-        public IList<T> ToList()
+        public virtual IList<T> ToList()
         {
-            while (!this.IsFullfilled) {
-                this.Read();
-            }
+           
             return this._Items.ToList();
         }
 
@@ -153,10 +131,7 @@ namespace Itec.Datas
             return this.Each();
         }
 
-        async Task<object> IDataset.EachAsync()
-        {
-            return await this.EachAsync();
-        }
+       
 
         IEnumerator IEnumerable.GetEnumerator()
         {

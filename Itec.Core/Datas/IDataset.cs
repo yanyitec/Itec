@@ -10,7 +10,7 @@ namespace Itec.Datas
         void Each(Action<object, int> eacher);
         object Each();
 
-        Task<object> EachAsync();
-        int Count { get; }
+        
+        int Length { get; }
     }
 }

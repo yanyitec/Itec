@@ -88,8 +88,16 @@ namespace Itec.Logs
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("[DETAILS]: ");
+                var formater = entry.DetailsObject as ILogSerializable;
+                if (formater != null)
+                {
+                    Console.WriteLine(formater.Serialize(this));
+                }
+                else {
+                    Console.WriteLine(this.Formater == null ? Newtonsoft.Json.JsonConvert.SerializeObject(entry.DetailsObject) : this.Formater.FormatDetails(entry.DetailsObject));
+                }
                 //Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(this.Formater == null ? Newtonsoft.Json.JsonConvert.SerializeObject( entry.DetailsObject) : this.Formater.Format(entry.DetailsObject));
+                
             }
             Console.WriteLine();
 

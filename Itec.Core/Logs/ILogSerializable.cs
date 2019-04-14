@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Itec.Logs
 {
-    public interface IDetailsFormater
+    public interface ILogSerializable
     {
-        string FormatDetails(object details);
+        string Serialize(ILogWriter writer);
     }
 }

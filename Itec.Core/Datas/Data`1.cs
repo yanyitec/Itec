@@ -13,7 +13,7 @@ namespace Itec.Datas
         where T : class
     {
         protected Func<T> GetObject { get; set; }
-        public MetaClass<T> MetaClass { get; private set; }
+        public IMetaClass<T> MetaClass { get; private set; }
         protected Data(IMetaFactory metaFactory = null)
         {
             
@@ -21,7 +21,7 @@ namespace Itec.Datas
             this.MetaClass = factory.GetClass<T>();
         }
 
-        protected Data(MetaClass<T> cls) {
+        protected Data(IMetaClass<T> cls) {
             this.MetaClass = cls;
         }
 

@@ -125,7 +125,7 @@ namespace Itec.Logs
                 await stream.WriteLineAsync("[DETAILS]:");
                 string msg = null;
                 try {
-                    msg = this.Formater == null ? entry.DetailsObject.ToString() : this.Formater.Format(entry.DetailsObject);
+                    msg = this.Formater == null ? entry.DetailsObject.ToString() : this.Formater.FormatDetails(entry.DetailsObject);
                 } catch { }
                 await stream.WriteLineAsync(msg);
             }

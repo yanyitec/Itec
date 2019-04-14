@@ -11,6 +11,5 @@ namespace Itec.Datas
         IList<T> ToList();
         void Each(Action<T,int> eacher);
         new T Each();
-        new Task<T> EachAsync();
     }
 }

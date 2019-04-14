@@ -162,20 +162,6 @@ namespace Itec.ORMs
         
         
 
-        public static string SafeString(string str) {
-            return str.Replace("'", "''");//.Replace("\n","\\n").Replace("\r", "\\r");
-        }
-
-        public static string SqlValue(object value,bool nullable=false,object defaultValue=null) {
-            if (value == null) {
-                if (nullable) return "NULL";
-                else value = defaultValue??"";
-            }
-            var t = value.GetType();
-            if (t == typeof(DateTime)) return "'1790-1-1'";
-            if (t.IsClass) return "'" +SafeString(value.ToString())+ "'";
-            return value.ToString();
-            
-        }
+        
     }
 }

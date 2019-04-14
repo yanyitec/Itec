@@ -7,13 +7,13 @@ using System.Text;
 
 namespace Itec.ORMs
 {
-    public class DbClass<T>:MetaClass<T>,IDbClass
+    public class DbClass<T> : MetaClass<T>, IDbClass, IDbClass<T>
     {
         public DbClass(Func<JObject> configGetter) : base(configGetter) {
             
         }
 
-        protected override MetaProperty CreateProperty(MemberInfo memberInfo)
+        protected override IMetaProperty CreateProperty(MemberInfo memberInfo)
         {
             return new DbProperty<T>(memberInfo, this);
         }

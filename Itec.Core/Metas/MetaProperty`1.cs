@@ -6,15 +6,15 @@ using System.Text;
 
 namespace Itec.Metas
 {
-    public class MetaProperty<T>:MetaProperty
-        //where T:class
+    public class MetaProperty<T> : MetaProperty, IMetaProperty<T>
+    //where T:class
     {
-        public MetaProperty(MemberInfo memberInfo,MetaClass<T> cls=null):base(memberInfo,cls)
+        public MetaProperty(MemberInfo memberInfo,IMetaClass<T> cls=null):base(memberInfo,cls)
         {
             this.Class = cls;
         }
 
-        public new MetaClass<T> Class { get; private set; }
+        public new IMetaClass<T> Class { get; private set; }
         #region GetValue
         Func<T, object> _GetValue;
         public object GetValue(T instance)

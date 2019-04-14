@@ -38,13 +38,14 @@ namespace Itec.ORMs.SQLs
 
         public DbCommand BuildCommand(T data, DbConnection conn, DbTransaction trans) {
             var sql = GetSql(data);
-            this.Sql.Database.Logger.DebugDetails(data,sql);
+            
             var cmd = conn.CreateCommand();
             
             cmd.Transaction = trans;
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = sql;
             BuildParameters(cmd, data);
+            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters), sql);
             return cmd;
         }
 
@@ -79,10 +80,9 @@ namespace Itec.ORMs.SQLs
             var sql_fields = "";
             var sql_values = "";
             foreach (var pair in this.Sql.AllowedProps) {
-
-                var fname = this.Sql.DbTrait.SqlFieldname(pair.Key);
                 var prop = pair.Value;
-                if (fname == null) continue;
+                var fname = this.Sql.DbTrait.SqlFieldname(prop.Field.Name);
+               
                 if (sql_fields != string.Empty) sql_fields += ",";
                 if (sql_values != string.Empty) sql_values += ",";
                 sql_fields += fname;
@@ -99,13 +99,13 @@ namespace Itec.ORMs.SQLs
                         var hasValue = prop.HasValue(entity);
                         if (!hasValue) {
                             if (nullable) sql_values += "NULL";
-                            else sql_values += DbTrait.SqlValue(prop.DefaultValue,false,prop.DefaultValue)??"''";
+                            else sql_values += SQL<T>.SqlValue(prop.DefaultValue,false,prop.DefaultValue)??"''";
                         }
                         else
                         {
                             var val = prop.EnsureValue(entity);
                             if (val == null) sql_values += "''";
-                            sql_values += DbTrait.SqlValue(val.ToString());
+                            sql_values += SQL<T>.SqlValue(val.ToString());
                         }
                         break;
                         
@@ -135,9 +135,8 @@ namespace Itec.ORMs.SQLs
 
             foreach (var pair in this.Sql.AllowedProps)
             {
-                var fname = pair.Key;
                 var prop = pair.Value;
-                GenParam(fname, prop,dataExpr, cmdExpr, codes, locals);
+                GenParam(prop.Field.Name, prop,dataExpr, cmdExpr, codes, locals);
             }
 
             var block = Expression.Block(locals, codes);

@@ -99,7 +99,7 @@ INSERT INTO itec_Logs (
             dbParam = cmd.CreateParameter();
             dbParam.ParameterName = "@Details";
             dbParam.DbType = DbType.String;
-            dbParam.Value = entry.DetailsObject==null?string.Empty:(Formater==null?entry.DetailsObject.ToString():Formater.Format(entry.DetailsObject));
+            dbParam.Value = entry.DetailsObject==null?string.Empty:(Formater==null?entry.DetailsObject.ToString():Formater.FormatDetails(entry.DetailsObject));
             cmd.Parameters.Add(dbParam);
 
             dbParam = cmd.CreateParameter();

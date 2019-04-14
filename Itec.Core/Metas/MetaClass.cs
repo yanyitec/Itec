@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Itec.Metas
 {
-    public class MetaClass : IEnumerable<MetaProperty>, IMetaClass
+    public class MetaClass : IEnumerable<IMetaProperty>, IMetaClass
     {
         public MetaClass(Type type,Func<JObject> configGetter = null) {
             this.Type = type;
@@ -16,7 +16,7 @@ namespace Itec.Metas
         }
         public Func<JObject> GetConfig { get; private set; }
         void Init() {
-            this._Props = new Dictionary<string, MetaProperty>();
+            this._Props = new Dictionary<string, IMetaProperty>();
             this._Methods = new Dictionary<string, MetaMethods>();
             this._PropNames = new List<string>();
             var members = this.Type.GetMembers();
@@ -60,7 +60,7 @@ namespace Itec.Metas
             get { return this.Type.Name; }
         }
 
-        Dictionary<string, MetaProperty> _Props;
+        Dictionary<string, IMetaProperty> _Props;
 
         List<string> _PropNames;
         public IReadOnlyList<string> PropNames {
@@ -79,7 +79,7 @@ namespace Itec.Metas
             }
         }
 
-        protected IReadOnlyDictionary<string, MetaProperty> Props {
+        protected IReadOnlyDictionary<string, IMetaProperty> Props {
             get {
                 if (_Props == null)
                 {
@@ -99,13 +99,13 @@ namespace Itec.Metas
             return this[name].GetValue(obj);
         }
 
-        public MetaClass SetValue(object obj, string name, object value) {
+        public IMetaClass SetValue(object obj, string name, object value) {
             this[name].SetValue(obj,value);
             return this;
         }
 
 
-        public MetaProperty this[string name] {
+        public IMetaProperty this[string name] {
             get {
                 if (_Props == null) {
                     lock (this) {
@@ -114,7 +114,7 @@ namespace Itec.Metas
                         }
                     }
                 }
-                MetaProperty prop = null;
+                IMetaProperty prop = null;
                 this._Props.TryGetValue(name,out prop);
                 return prop;
             }
@@ -212,10 +212,10 @@ namespace Itec.Metas
 
 
 
-        protected virtual MetaProperty CreateProperty(MemberInfo memberInfo)
+        protected virtual IMetaProperty CreateProperty(MemberInfo memberInfo)
         {
             var t = typeof(MetaProperty<>).MakeGenericType(this.Type);
-            return Activator.CreateInstance(t, memberInfo, this) as MetaProperty;
+            return Activator.CreateInstance(t, memberInfo, this) as IMetaProperty;
         }
 
         protected virtual MetaMethod CreateMethod(MethodInfo methodInfo)
@@ -227,7 +227,7 @@ namespace Itec.Metas
         }
 
         
-        public IEnumerator<MetaProperty> GetEnumerator()
+        public IEnumerator<IMetaProperty> GetEnumerator()
         {
             return this.Props.Values.GetEnumerator();
         }

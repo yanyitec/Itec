@@ -6,7 +6,7 @@ namespace Itec.Metas
 {
     public interface IMetaClass
     {
-        MetaProperty this[string name] { get; }
+        IMetaProperty this[string name] { get; }
 
         IReadOnlyList<Attribute> Attributes { get; }
         Func<JObject> GetConfig { get; }
@@ -21,9 +21,9 @@ namespace Itec.Metas
         object CopyTo(Type targetType, object src, object dest = null, string fieldnames = null);
         object CreateInstance();
         T GetAttribute<T>() where T : Attribute;
-        IEnumerator<MetaProperty> GetEnumerator();
+        IEnumerator<IMetaProperty> GetEnumerator();
         MetaMethods GetMethods(string name);
         object GetValue(object obj, string name);
-        MetaClass SetValue(object obj, string name, object value);
+        IMetaClass SetValue(object obj, string name, object value);
     }
 }
