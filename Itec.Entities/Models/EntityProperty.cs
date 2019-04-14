@@ -8,7 +8,7 @@ namespace Itec.Entities
 {
     public class EntityProperty:MetaProperty
     {
-        public EntityProperty(MemberInfo memberInfo, EntityModel cls = null) : base(memberInfo, cls)
+        public EntityProperty(MemberInfo memberInfo, EntityClass cls = null) : base(memberInfo, cls)
         {
 
         }

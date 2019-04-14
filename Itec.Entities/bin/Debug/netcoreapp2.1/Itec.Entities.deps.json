@@ -55,19 +55,10 @@
       },
       "Itec.Metas/1.0.0": {
         "dependencies": {
-          "Itec.Models": "1.0.0",
           "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "Itec.Metas.dll": {}
-        }
-      },
-      "Itec.Models/1.0.0": {
-        "dependencies": {
-          "Newtonsoft.Json": "12.0.1"
-        },
-        "runtime": {
-          "Itec.Models.dll": {}
         }
       }
     }
@@ -93,11 +84,6 @@
       "hashPath": "system.data.sqlite.core.1.0.110.nupkg.sha512"
     },
     "Itec.Metas/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "Itec.Models/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

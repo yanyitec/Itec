@@ -14,3 +14,17 @@ Y:\Itec\Itec.Models\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.Assembly
 Y:\Itec\Itec.Models\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.csproj.CopyComplete
 Y:\Itec\Itec.Models\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.dll
 Y:\Itec\Itec.Models\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.pdb
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.csprojAssemblyReference.cache
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.csproj.CoreCompileInputs.cache
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.AssemblyInfoInputs.cache
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.AssemblyInfo.cs
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.dll
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.pdb
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Entities.deps.json
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Entities.runtimeconfig.json
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Entities.runtimeconfig.dev.json
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Entities.dll
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Entities.pdb
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Metas.dll
+Y:\Itec\Itec.Entities\bin\Debug\netcoreapp2.1\Itec.Metas.pdb
+Y:\Itec\Itec.Entities\obj\Debug\netcoreapp2.1\Itec.Entities.csproj.CopyComplete

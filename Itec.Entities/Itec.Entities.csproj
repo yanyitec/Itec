@@ -10,7 +10,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Itec.Metas\Itec.Metas\Itec.Metas.csproj" />
+    <ProjectReference Include="..\Itec.Metas\Itec.Metas.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DB\" />
+    <Folder Include="SQLs\" />
   </ItemGroup>
 
 </Project>

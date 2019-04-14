@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		架构类组件 20.txt = 架构类组件 20.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itec.Metas", "Itec.Metas\Itec.Metas.csproj", "{FCD5768A-B725-4BD6-BE83-229E08287393}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Itec.Core", "Itec.Core\Itec.Core.csproj", "{4EDBEE34-52C4-4497-B341-1D60166C6499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +20,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FCD5768A-B725-4BD6-BE83-229E08287393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FCD5768A-B725-4BD6-BE83-229E08287393}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FCD5768A-B725-4BD6-BE83-229E08287393}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FCD5768A-B725-4BD6-BE83-229E08287393}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EDBEE34-52C4-4497-B341-1D60166C6499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EDBEE34-52C4-4497-B341-1D60166C6499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EDBEE34-52C4-4497-B341-1D60166C6499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EDBEE34-52C4-4497-B341-1D60166C6499}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

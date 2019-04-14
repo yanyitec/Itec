@@ -208,6 +208,15 @@
           "build/netstandard2.0/NETStandard.Library.targets": {}
         }
       },
+      "Newtonsoft.Json/12.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+        }
+      },
       "System.Data.SQLite.Core/1.0.110": {
         "type": "package",
         "compile": {
@@ -233,6 +242,21 @@
             "assetType": "native",
             "rid": "win-x86"
           }
+        }
+      },
+      "Itec.Metas/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v2.1",
+        "dependencies": {
+          "Microsoft.NETCore.App": "2.1.0",
+          "Newtonsoft.Json": "12.0.1",
+          "System.Data.SQLite.Core": "1.0.110"
+        },
+        "compile": {
+          "bin/placeholder/Itec.Metas.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Itec.Metas.dll": {}
         }
       }
     }
@@ -701,6 +725,44 @@
         "netstandard.library.nuspec"
       ]
     },
+    "Newtonsoft.Json/12.0.1": {
+      "sha512": "jmVyoEyk0In8r+AObYQyFKVFm7uSRzE0XSHSbEtBJcZDMV6DqJoyB4FLcHwprPVhAh826so0db3DIKXVnpGoPA==",
+      "type": "package",
+      "path": "newtonsoft.json/12.0.1",
+      "files": [
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.pdb",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.pdb",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.pdb",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.pdb",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.pdb",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.pdb",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.pdb",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.pdb",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.pdb",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.12.0.1.nupkg.sha512",
+        "newtonsoft.json.nuspec"
+      ]
+    },
     "System.Data.SQLite.Core/1.0.110": {
       "sha512": "x7xZ0oBWycJch9ShAFwTQRPJ2HEo5NmXyhx/LFJvSbCBQVXnHc9rIAeLo1VXzDFbfbtPl3HFpFhriEnUkS2L0Q==",
       "type": "package",
@@ -747,13 +809,18 @@
         "system.data.sqlite.core.1.0.110.nupkg.sha512",
         "system.data.sqlite.core.nuspec"
       ]
+    },
+    "Itec.Metas/1.0.0": {
+      "type": "project",
+      "path": "../Itec.Metas/Itec.Metas.csproj",
+      "msbuildProject": "../Itec.Metas/Itec.Metas.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v2.1": [
+      "Itec.Metas >= 1.0.0",
       "Microsoft.NETCore.App >= 2.1.0",
-      "System.Data.SQLite.Core >= 1.0.110",
-      "Y:\\Itec.Metas\\Itec.Metas\\Itec.Metas.csproj"
+      "System.Data.SQLite.Core >= 1.0.110"
     ]
   },
   "packageFolders": {
@@ -786,8 +853,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "Y:\\Itec.Metas\\Itec.Metas\\Itec.Metas.csproj": {
-              "projectPath": "Y:\\Itec.Metas\\Itec.Metas\\Itec.Metas.csproj"
+            "Y:\\Itec\\Itec.Metas\\Itec.Metas.csproj": {
+              "projectPath": "Y:\\Itec\\Itec.Metas\\Itec.Metas.csproj"
             }
           }
         }
@@ -818,16 +885,5 @@
         "warn": true
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1104",
-      "level": "Error",
-      "message": "Unable to find project 'Y:\\Itec.Metas\\Itec.Metas\\Itec.Metas.csproj'. Check that the project reference is valid and that the project file exists.",
-      "libraryId": "Y:\\Itec.Metas\\Itec.Metas\\Itec.Metas.csproj",
-      "targetGraphs": [
-        ".NETCoreApp,Version=v2.1"
-      ]
-    }
-  ]
+  }
 }
