@@ -170,6 +170,12 @@ namespace Itec.ORMs
             return result.Load();
         }
 
+        public virtual int Length {
+            get {
+                return this.Count();
+            }
+        }
+
         public int Count(IDbTransaction tran=null)
         {
             if (tran == null)

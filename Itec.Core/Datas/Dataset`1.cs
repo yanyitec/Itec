@@ -67,7 +67,11 @@ namespace Itec.Datas
             }
         }
 
-
+        public T this[int index] {
+            get {
+                return this.Items[index];
+            }
+        }
 
         public int Length {
             get {

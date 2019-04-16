@@ -45,7 +45,7 @@ namespace Itec.ORMs
             {
                 conn.Open();
                 var cmd = conn.CreateCommand();
-                List<T> result = dbset.Sql.Select.Execute(dbset.QueryExpression, conn, null);
+                List<T> result = dbset.Sql.Select.Execute(dbset, conn, null);
                 return result;
 
             }
@@ -60,7 +60,7 @@ namespace Itec.ORMs
             {
                 await conn.OpenAsync();
                 var cmd = conn.CreateCommand();
-                List<T> result = await dbset.Sql.Select.ExecuteAsync(dbset.QueryExpression, conn, null);
+                List<T> result = await dbset.Sql.Select.ExecuteAsync(dbset, conn, null);
                 return result;
 
             }

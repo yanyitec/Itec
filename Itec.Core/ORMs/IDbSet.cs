@@ -8,7 +8,7 @@ namespace Itec.ORMs
     {
         Database Database { get; }
         IDbClass DbClass { get; }
-
+        int Length { get; }
         int Count(IDbTransaction tran=null);
 
         Task<int> CountAsync(IDbTransaction tran=null);

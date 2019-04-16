@@ -36,16 +36,24 @@ namespace Itec.Tests
             var article2 = new Article()
             {
                 Id = 2,
-                Name = "Yi",
-                Description = "Yi Desc",
+                Name = "yy",
+                Description = "yy Desc",
                 Age = 30
             };
             (await dbset.InsertAsync(article1)).Insert(article2);
 
-            dbset = dbset.Query(p=>p.Name=="Yiy");
+            for (var i = 0; i < 7; i++) {
+                article2.Id++;
+                article2.Name = "xxx" + i.ToString();
+                dbset.Insert(article2);
+            }
 
+            dbset = dbset.Query(p=>p.Name.StartsWith("xxx")).Page(2,2).Descending(p=>p.Id);
+            var count = dbset.Count();
+            Console.WriteLine("Count:" + count.ToString());
             dbset.Load();
-            Console.WriteLine("Loaded record{0}",dbset.Count());
+            var len = dbset.Length;
+            Console.WriteLine("Loaded record{0}",len);
         }
     }
 }

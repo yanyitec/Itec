@@ -11,7 +11,9 @@ namespace Itec.ORMs.SQLs
 {
     public class Where<T>
     {
+        
         public SQL<T> Sql { get; private set; }
+
         public Where(SQL<T> sql)
         {
             this.Sql = sql;
@@ -25,65 +27,92 @@ namespace Itec.ORMs.SQLs
 
 
 
-        public string SqlWhere(Expression exp, DbCommand cmd,ref IDbProperty prop,int noSeed)
+        public string SqlWhere(Expression exp, DbCommand cmd, WhereOpts opts=null)
         {
             if (exp == null) return null;
+            if (opts == null) opts = new WhereOpts();
+            BinaryExpression bExp = null;
             switch (exp.NodeType)
             {
                 case ExpressionType.Lambda:
-                    return SqlWhere(((LambdaExpression)exp).Body,cmd,ref prop,noSeed);
+                    return SqlWhere(((LambdaExpression)exp).Body,cmd,opts);
+                
                 case ExpressionType.AndAlso:
-                    var andAlso = exp as BinaryExpression;
-                    return "(" + SqlWhere(andAlso.Left, cmd,ref prop, noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd,opts)
                          + " AND "
-                         + SqlWhere(andAlso.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.OrElse:
-                    var orElse = exp as BinaryExpression;
-                    return "(" + SqlWhere(orElse.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " OR "
-                         + SqlWhere(orElse.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.Equal:
-                    var eq = exp as BinaryExpression;
-                    return "(" + SqlWhere(eq.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " = "
-                         + SqlWhere(eq.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.NotEqual:
-                    var neq = exp as BinaryExpression;
-                    return "(" + SqlWhere(neq.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " <> "
-                         + SqlWhere(neq.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.GreaterThan:
-                    var gt = exp as BinaryExpression;
-                    return "(" + SqlWhere(gt.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " > "
-                         + SqlWhere(gt.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.GreaterThanOrEqual:
-                    var gte = exp as BinaryExpression;
-                    return "(" + SqlWhere(gte.Left,cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left,cmd ,opts )
                          + " >= "
-                         + SqlWhere(gte.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.LessThan:
-                    var lt = exp as BinaryExpression;
-                    return "(" + SqlWhere(lt.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " < "
-                         + SqlWhere(lt.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
                          + ")";
                 case ExpressionType.LessThanOrEqual:
-                    var lte = exp as BinaryExpression;
-                    return "(" + SqlWhere(lte.Left, cmd ,ref prop ,noSeed)
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd ,opts )
                          + " <= "
-                         + SqlWhere(lte.Right, cmd ,ref prop ,noSeed)
+                         + SqlWhere(bExp.Right, cmd ,opts )
+                         + ")";
+                case ExpressionType.Add:
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd, opts)
+                         + " + "
+                         + SqlWhere(bExp.Right, cmd, opts)
+                         + ")";
+                case ExpressionType.Decrement:
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd, opts)
+                         + " - "
+                         + SqlWhere(bExp.Right, cmd, opts)
+                         + ")";
+                case ExpressionType.Multiply:
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd, opts)
+                         + " * "
+                         + SqlWhere(bExp.Right, cmd, opts)
+                         + ")";
+                case ExpressionType.Divide:
+                    bExp = exp as BinaryExpression;
+                    return "(" + SqlWhere(bExp.Left, cmd, opts)
+                         + " / "
+                         + SqlWhere(bExp.Right, cmd, opts)
                          + ")";
                 case ExpressionType.MemberAccess:
                     var m = exp as MemberExpression;
                     var member = this.Sql.AllowedProps.Values.FirstOrDefault(p=>p.Name==m.Member.Name);
-                    prop = member;
+                    opts.LastProp = member;
                     return this.Sql.DbTrait.SqlFieldname(member.Field.Name);
                     
                 case ExpressionType.Call:
@@ -91,30 +120,37 @@ namespace Itec.ORMs.SQLs
                     switch (method.Method.Name)
                     {
                         case "Contains":
-                            return SqlWhere(method.Object, cmd ,ref prop ,noSeed)
+                            opts.ValueEmbeded = true;
+                            return SqlWhere(method.Object, cmd ,opts )
                                 + " LIKE ('%"
-                                + SqlWhere(method.Arguments[0], cmd ,ref prop ,noSeed)
+                                + SqlWhere(method.Arguments[0], cmd ,opts )
                                 + "%')";
-                        case "StartWith":
-                            return SqlWhere(method.Object, cmd ,ref prop ,noSeed)
+                        case "StartsWith":
+                            opts.ValueEmbeded = true;
+                            return SqlWhere(method.Object, cmd ,opts )
                                 + " LIKE ('"
-                                + SqlWhere(method.Arguments[0], cmd ,ref prop ,noSeed)
+                                + SqlWhere(method.Arguments[0], cmd ,opts )
                                 + "%')";
-                        case "EndWith":
-                            return SqlWhere(method.Object, cmd ,ref prop ,noSeed)
+                        case "EndsWith":
+                            opts.ValueEmbeded = true;
+                            return SqlWhere(method.Object, cmd ,opts )
                                 + " LIKE ('%"
-                                + SqlWhere(method.Arguments[0], cmd ,ref prop ,noSeed)
+                                + SqlWhere(method.Arguments[0], cmd ,opts )
                                 + "')";
                         default:
                             throw new InvalidExpressionException("无法支持的表达式");
                     }
                 case ExpressionType.Constant:
                     var cst = (exp as ConstantExpression);
+                    if (opts.ValueEmbeded) {
+                        opts.ValueEmbeded = false;
+                        return cst.Value.ToString().Replace("'","''");
+                    }
                     var par = cmd.CreateParameter();
-                    par.ParameterName = "@p_" + (++noSeed).ToString();
+                    par.ParameterName = "@p" + (++opts.NoSeed).ToString();
                     par.Value = cst.Value;
                     
-                    par.DbType = prop.Field.DbType;
+                    par.DbType = opts.LastProp.Field.DbType;
                     cmd.Parameters.Add(par);
                     return par.ParameterName;
                 default:

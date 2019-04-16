@@ -83,15 +83,15 @@ namespace Itec.ORMs.SQLs
                     if (_tbAndFields == null)
                     {
                         
-                        _tbAndFields = $"SELECT * FROM {this.Sql.Tablename(true)} ";
+                        _tbAndFields = $"SELECT COUNT(*) FROM {this.Sql.Tablename(true)} ";
                         _tbAndFieldsWithWhere = _tbAndFields + " WHERE ";
                     }
                 }
             }
             if (expr != null)
             {
-                IDbProperty prop = null;
-                var cond = this.SqlWhere(expr, cmd, ref prop, 0);
+                WhereOpts wOpts = null;
+                var cond = this.SqlWhere(expr, cmd, wOpts);
                 if (string.IsNullOrEmpty(cond)) return _tbAndFields;
                 var sql = _tbAndFieldsWithWhere + cond;
                 return sql;

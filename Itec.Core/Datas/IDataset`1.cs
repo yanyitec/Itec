@@ -11,5 +11,6 @@ namespace Itec.Datas
         IList<T> ToList();
         void Each(Action<T,int> eacher);
         new T Each();
+        T this[int index] { get; }
     }
 }

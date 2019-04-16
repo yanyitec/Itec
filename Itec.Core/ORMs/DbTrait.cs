@@ -110,8 +110,23 @@ namespace Itec.ORMs
             
         }
 
-        
 
+        public virtual string SqlPaginate(string tbname,string fields,string where,string orderBy,int takeCount=-1,int skipCount=-1) {
+            var sql = $"SELECT {fields} FROM {tbname}";
+            if (!string.IsNullOrEmpty(where)) {
+                sql += " WHERE " + where; 
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sql += " ORDER BY " + orderBy;
+            }
+
+            if (takeCount > 0) sql += " LIMIT " + takeCount.ToString();
+            if (skipCount > 0) sql += " OFFSET " + skipCount.ToString();
+            return sql;
+
+        }
 
 
         

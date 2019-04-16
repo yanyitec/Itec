@@ -20,10 +20,10 @@ namespace Itec.ORMs.SQLs
 
        
 
-        Func<IDataReader, T> _Fill;
+        Func<IDataReader,int, T> _Fill;
 
 
-        public T FillEntity(IDataReader reader)
+        public T FillEntity(IDataReader reader,int at=0)
         {
             if (_Fill == null)
             {
@@ -32,13 +32,13 @@ namespace Itec.ORMs.SQLs
                     if (_Fill == null) _Fill = GenFill();
                 }
             }
-            return _Fill(reader);
+            return _Fill(reader,at);
         }
 
-        public List<T> Execute(Expression expr, DbConnection conn, DbTransaction trans)
+        public List<T> Execute(IFilterable<T> filterable, DbConnection conn, DbTransaction trans)
         {
 
-            var cmd = BuildCommand(expr, conn, trans);
+            var cmd = BuildCommand(filterable, conn, trans);
 
             var result = new List<T>();
             using (var reader = cmd.ExecuteReader())
@@ -52,10 +52,10 @@ namespace Itec.ORMs.SQLs
             return result;
         }
 
-        public async Task<List<T>> ExecuteAsync(Expression expr, DbConnection conn, DbTransaction trans)
+        public async Task<List<T>> ExecuteAsync(IFilterable<T> filterable, DbConnection conn, DbTransaction trans)
         {
 
-            var cmd = BuildCommand(expr, conn, trans);
+            var cmd = BuildCommand(filterable, conn, trans);
 
             var result = new List<T>();
             using (var reader = await cmd.ExecuteReaderAsync())
@@ -72,19 +72,32 @@ namespace Itec.ORMs.SQLs
 
 
 
-        public virtual DbCommand BuildCommand(Expression expr, DbConnection conn, DbTransaction trans)
+        public virtual DbCommand BuildCommand(IFilterable<T> filterable, DbConnection conn, DbTransaction trans)
         {
 
             var cmd = conn.CreateCommand();
             cmd.Connection = conn;
             cmd.Transaction = trans;
             cmd.CommandType = System.Data.CommandType.Text;
-            var sql = GetSql(expr, cmd);
+            var sql = GetSql(filterable, cmd);
             cmd.CommandText = sql;
             this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),sql);
             return cmd;
         }
 
+        string _fields;
+        public string SqlFields {
+            get {
+                if (_fields == null)
+                {
+                    lock (this)
+                    {
+                         this.BuildTbAndFieldsSql();
+                    }
+                }
+                return _fields;
+            }
+        }
         string _tbAndFields;
         string _tbAndFieldsWithWhere;
 
@@ -97,13 +110,14 @@ namespace Itec.ORMs.SQLs
                 if (fields != string.Empty) fields += ",";
                 fields += fieldname;
             }
+            _fields = fields;
             _tbAndFields = $"SELECT {fields} FROM {this.Sql.Tablename(true)} ";
             _tbAndFieldsWithWhere = _tbAndFields + " WHERE ";
 
             return _tbAndFieldsWithWhere;
         }
 
-        protected string GetSql(Expression expr, DbCommand cmd)
+        protected string GetSql(IFilterable<T> filterable, DbCommand cmd)
         {
             if (_tbAndFieldsWithWhere == null)
             {
@@ -112,22 +126,34 @@ namespace Itec.ORMs.SQLs
                     if (_tbAndFieldsWithWhere == null)  this.BuildTbAndFieldsSql();
                 }
             }
-            
-            if (expr != null)
-            {
-                IDbProperty prop = null;
-                var cond = this.SqlWhere(expr, cmd,ref prop,0);
-                if (string.IsNullOrEmpty(cond)) return _tbAndFields;
-                var sql = _tbAndFieldsWithWhere + cond;
-                return sql;
+            var expr = filterable.QueryExpression;
+            var wOpts = new WhereOpts();
+            string where=null;
+            string orderBy=null;
+            if (filterable.QueryExpression != null) {
+                where = this.SqlWhere(expr, cmd,wOpts);
             }
-            else return _tbAndFields;
-
+            if (filterable.AscendingExpression != null) {
+                orderBy = this.Sql.DbTrait.SqlFieldname(this.SqlWhere((filterable.AscendingExpression.Body as UnaryExpression).Operand, cmd, wOpts)) + " ASC";
+            }
+            else if (filterable.DescendingExpression != null)
+            {
+                orderBy = this.Sql.DbTrait.SqlFieldname(this.SqlWhere((filterable.DescendingExpression.Body as UnaryExpression).Operand, cmd, wOpts)) + " DESC";
+            }
+            if(where==null && orderBy==null && filterable.SkipCount<-0 && filterable.TakeCount<=0)  return _tbAndFields;
+            return this.Sql.DbTrait.SqlPaginate(
+                this.Sql.Tablename(true),
+                this._fields,
+                where,
+                orderBy,
+                filterable.TakeCount,
+                filterable.SkipCount
+            );
 
         }
         static readonly MethodInfo[] DataReaderMethodInfos = typeof(IDataRecord).GetMethods();
         //static readonly MethodInfo DataReaderGetItemMethod = typeof(IDataReader).GetMethod("get_Item", new Type[] { typeof(int) });
-        Func<IDataReader,T> GenFill()
+        Func<IDataReader,int,T> GenFill()
         {
             var getItemMethodInfo = DataReaderMethodInfos.FirstOrDefault(p=>p.Name=="get_Item" && p.GetParameters()[0].ParameterType == typeof(int));
 
@@ -176,9 +202,9 @@ namespace Itec.ORMs.SQLs
             codes.Add(Expression.Return(retLabel, entityExpr));
             codes.Add(Expression.Label(retLabel,entityExpr));
 
-            var block = Expression.Block(new List<ParameterExpression> {indexExpr, valObjExpr, entityExpr }, codes);
+            var block = Expression.Block(new List<ParameterExpression> {valObjExpr, entityExpr }, codes);
             //IDataReader rs;rs[]
-            var lamda = Expression.Lambda<Func<IDataReader,T>>(block, readerExpr);
+            var lamda = Expression.Lambda<Func<IDataReader,int,T>>(block, readerExpr,indexExpr);
             return lamda.Compile();
         }
     }
