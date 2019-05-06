@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Itec.ORMs
 {
-    public interface IDbSet<T>:IDbSet
+    public interface IDbSet<T>:IFilterable<T>,IDbSet
     {
         
         new IDbClass<T> DbClass { get; }
@@ -33,6 +33,8 @@ namespace Itec.ORMs
         IDbSet<T> Skip(int count);
 
         IDbSet<T> Page(int index, int size);
+
+        
 
 
         IDbSet<T> Load();

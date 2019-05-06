@@ -147,7 +147,7 @@ namespace Itec.ORMs.SQLs
                         return cst.Value.ToString().Replace("'","''");
                     }
                     var par = cmd.CreateParameter();
-                    par.ParameterName = "@p" + (++opts.NoSeed).ToString();
+                    par.ParameterName = "@_WP" + (++opts.NoSeed).ToString();
                     par.Value = cst.Value;
                     
                     par.DbType = opts.LastProp.Field.DbType;

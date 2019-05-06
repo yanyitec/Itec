@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace Itec.ORMs.SQLs
@@ -45,7 +49,7 @@ namespace Itec.ORMs.SQLs
             this.Select = new Select<T>(this);
             this.Count = new Count<T>(this);
             this.GetById = new GetById<T>(this);
-            //this.Update = new Update(model, membersString);
+            this.Update = new Update<T>(this);
             //this.Select = new Select(model, membersString);
         }
         public Database Database { get; private set; }
@@ -80,6 +84,173 @@ namespace Itec.ORMs.SQLs
             return this.DbTrait.SqlTablename(tbName);
         }
 
+        string _fields;
+        public string SqlFields
+        {
+            get
+            {
+                if (_fields == null)
+                {
+                    lock (this)
+                    {
+                        this.BuildTbAndFieldsSql();
+                    }
+                }
+                return _fields;
+            }
+        }
+        string _tbAndFields;
+
+        public string SqlTableAndFields {
+            get
+            {
+                if (_tbAndFields == null)
+                {
+                    lock (this)
+                    {
+                        this.BuildTbAndFieldsSql();
+                    }
+                }
+                return _tbAndFields;
+            }
+        }
+
+
+        string _tbAndFieldsWithWhere;
+
+        public string SqlTableAndFieldsWithWhere
+        {
+            get
+            {
+                if (_tbAndFieldsWithWhere == null)
+                {
+                    lock (this)
+                    {
+                        this.BuildTbAndFieldsSql();
+                    }
+                }
+                return _tbAndFieldsWithWhere;
+            }
+        }
+
+        string BuildTbAndFieldsSql()
+        {
+            var fields = string.Empty;
+            foreach (var pair in this.AllowedProps)
+            {
+                var prop = pair.Value;
+                var fieldname = this.DbTrait.SqlFieldname(prop.Field.Name);
+                if (fields != string.Empty) fields += ",";
+                fields += fieldname;
+            }
+            _fields = fields;
+            _tbAndFields = $"SELECT {fields} FROM {this.Tablename(true)} ";
+            _tbAndFieldsWithWhere = _tbAndFields + " WHERE ";
+
+            return _tbAndFieldsWithWhere;
+        }
+
+
+        #region Command Builder
+        Action<T, DbCommand> _ParametersBuilder;
+
+        public void BuildParameters(DbCommand cmd, T data)
+        {
+            if (this.DbTrait.ParametricKind == SqlParametricKinds.Value) return;
+            if (_ParametersBuilder == null)
+            {
+                lock (this)
+                {
+                    if (_ParametersBuilder == null) _ParametersBuilder = GenParametersBuilder();
+                }
+            }
+            _ParametersBuilder(data, cmd);
+        }
+        Action<T, DbCommand> GenParametersBuilder()
+        {
+            ParameterExpression cmdExpr = Expression.Parameter(typeof(DbCommand), "cmd");
+            ParameterExpression dataExpr = Expression.Parameter(typeof(T), "data");
+            List<Expression> codes = new List<Expression>();
+            List<ParameterExpression> locals = new List<ParameterExpression>();
+
+            foreach (var pair in this.AllowedProps)
+            {
+                var prop = pair.Value;
+                GenParam(prop.Field.Name, prop, dataExpr, cmdExpr, codes, locals);
+            }
+
+            var block = Expression.Block(locals, codes);
+            var lamda = Expression.Lambda<Action<T, DbCommand>>(block, dataExpr, cmdExpr);
+            return lamda.Compile();
+        }
+        static MethodInfo CreateParameterMethodInfo = typeof(DbCommand).GetMethod("CreateParameter");
+        static MethodInfo AddParameterMethodInfo = typeof(DbParameterCollection).GetMethod("Add");
+        void GenParam(string fname, IDbProperty prop, Expression dataExpr, Expression cmdExpr, List<Expression> codes, List<ParameterExpression> locals)
+        {
+
+            var paramExpr = Expression.Parameter(typeof(DbParameter), fname);
+            locals.Add(paramExpr);
+            codes.Add(Expression.Assign(paramExpr, Expression.Call(cmdExpr, CreateParameterMethodInfo)));
+            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "ParameterName"), Expression.Constant("@" + fname)));
+            DbType dbType = prop.Field.DbType;
+            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "DbType"), Expression.Constant(dbType)));
+            Expression valueExpr = Expression.PropertyOrField(dataExpr, prop.Name);
+
+
+
+            if (prop.Field.Nullable)
+            {
+
+                if (prop.Nullable)
+                {
+                    valueExpr = Expression.Condition(
+                        Expression.PropertyOrField(valueExpr, "HasValue")
+                        , Expression.Convert(Expression.PropertyOrField(valueExpr, "Value"), typeof(object))
+                        , Expression.Convert(Expression.Constant(DBNull.Value), typeof(object))
+                    );
+                }
+                else if (prop.PropertyType == typeof(string))
+                {
+
+                    valueExpr = Expression.Condition(
+                        Expression.Equal(valueExpr, Expression.Constant(null, typeof(string)))
+                        , Expression.Convert(Expression.Constant(DBNull.Value), typeof(object))
+                        , Expression.Convert(valueExpr, typeof(object))
+                    );
+                }
+
+            }
+            else
+            {
+                if (prop.Nullable)
+                {
+                    valueExpr = Expression.Condition(
+                       Expression.PropertyOrField(valueExpr, "HasValue")
+                       , Expression.Convert(Expression.PropertyOrField(valueExpr, "Value"), typeof(object))
+                       , Expression.Convert(Expression.Constant(prop.DefaultValue), typeof(object))
+                   );
+                }
+                else if (prop.PropertyType == typeof(string))
+                {
+
+                    valueExpr = Expression.Condition(
+                        Expression.Equal(valueExpr, Expression.Constant(null, typeof(string)))
+                        , Expression.Constant(string.Empty)
+                        , valueExpr
+                    );
+                }
+
+
+            }
+            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "Value"), Expression.Convert(valueExpr, typeof(object))));
+            codes.Add(Expression.Call(Expression.Property(cmdExpr, "Parameters"), AddParameterMethodInfo, paramExpr));
+            //DbParameter par;
+            //par.Value
+        }
+
+        #endregion
+
+
         public Create<T> Create { get; private set; }
         public Insert<T> Insert { get; private set; }
         public Select<T> Select { get; private set; }
@@ -88,7 +259,7 @@ namespace Itec.ORMs.SQLs
 
         public GetById<T> GetById { get; private set; }
 
-        //public Update Update { get; private set; }
+        public Update<T> Update { get; private set; }
 
 
 

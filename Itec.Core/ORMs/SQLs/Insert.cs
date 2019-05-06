@@ -28,12 +28,16 @@ namespace Itec.ORMs.SQLs
         public bool Execute(T data,DbConnection conn, DbTransaction trans) {
 
             var cmd = BuildCommand(data,conn,trans);
-            return cmd.ExecuteNonQuery() == 1;
+            var effectCount = cmd.ExecuteNonQuery();
+            this.Sql.Database.Logger.Debug("SQL effects={1}[{0}]", cmd.CommandText, effectCount);
+            return effectCount==1;
         }
 
         public async Task<bool> ExecuteAsync(T data, DbConnection conn, DbTransaction trans) {
             var cmd = BuildCommand(data, conn, trans);
-            return (await cmd.ExecuteNonQueryAsync()) == 1;
+            var effectCount = await cmd.ExecuteNonQueryAsync();
+            this.Sql.Database.Logger.Debug("SQL effects={1}[{0}]", cmd.CommandText, effectCount);
+            return effectCount == 1;
         }
 
         public DbCommand BuildCommand(T data, DbConnection conn, DbTransaction trans) {
@@ -44,8 +48,8 @@ namespace Itec.ORMs.SQLs
             cmd.Transaction = trans;
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.CommandText = sql;
-            BuildParameters(cmd, data);
-            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters), sql);
+            this.Sql.BuildParameters(cmd, data);
+            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),"SQL executing[{0}]" ,sql);
             return cmd;
         }
 
@@ -115,99 +119,5 @@ namespace Itec.ORMs.SQLs
             return  "(" + sql_fields + ") VALUES(" +sql_values + ")";
         }
 
-        #region Command Builder
-        Action<T, DbCommand> _ParametersBuilder;
-
-        void BuildParameters(DbCommand cmd, T data) {
-            if (_ParametersBuilder == null) {
-                lock (this) {
-                    if (_ParametersBuilder == null) _ParametersBuilder = GenParametersBuilder();
-                }
-            }
-            _ParametersBuilder(data,cmd);
-        }
-        Action<T,DbCommand> GenParametersBuilder()
-        {
-            ParameterExpression cmdExpr = Expression.Parameter(typeof(DbCommand), "cmd");
-            ParameterExpression dataExpr = Expression.Parameter(typeof(T), "data");
-            List<Expression> codes = new List<Expression>();
-            List< ParameterExpression > locals = new List<ParameterExpression>();
-
-            foreach (var pair in this.Sql.AllowedProps)
-            {
-                var prop = pair.Value;
-                GenParam(prop.Field.Name, prop,dataExpr, cmdExpr, codes, locals);
-            }
-
-            var block = Expression.Block(locals, codes);
-            var lamda = Expression.Lambda<Action<T, DbCommand>>(block, dataExpr, cmdExpr);
-            return lamda.Compile();
-        }
-        static MethodInfo CreateParameterMethodInfo = typeof(DbCommand).GetMethod("CreateParameter");
-        static MethodInfo AddParameterMethodInfo = typeof(DbParameterCollection).GetMethod("Add");
-        void GenParam(string fname,IDbProperty prop, Expression dataExpr, Expression cmdExpr, List<Expression> codes, List<ParameterExpression> locals)
-        {
-            
-            var paramExpr = Expression.Parameter(typeof(DbParameter), fname);
-            locals.Add(paramExpr);
-            codes.Add(Expression.Assign(paramExpr,Expression.Call(cmdExpr,CreateParameterMethodInfo)));
-            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "ParameterName"),Expression.Constant("@" + fname)));
-            DbType dbType = prop.Field.DbType;
-            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "DbType"), Expression.Constant(dbType)));
-            Expression valueExpr = Expression.PropertyOrField(dataExpr, prop.Name);
-
-
-
-            if (prop.Field.Nullable)
-            {
-
-                if (prop.Nullable)
-                {
-                    valueExpr = Expression.Condition(
-                        Expression.PropertyOrField(valueExpr, "HasValue")
-                        , Expression.Convert(Expression.PropertyOrField(valueExpr, "Value"),typeof(object))
-                        , Expression.Convert(Expression.Constant(DBNull.Value),typeof(object))
-                    );
-                }
-                else if (prop.PropertyType == typeof(string))
-                {
-
-                    valueExpr = Expression.Condition(
-                        Expression.Equal(valueExpr, Expression.Constant(null, typeof(string)))
-                        , Expression.Convert(Expression.Constant(DBNull.Value), typeof(object))
-                        , Expression.Convert(valueExpr,typeof(object))
-                    );
-                }
-
-            }
-            else
-            {
-                if (prop.Nullable)
-                {
-                    valueExpr = Expression.Condition(
-                       Expression.PropertyOrField(valueExpr, "HasValue")
-                       , Expression.Convert(Expression.PropertyOrField(valueExpr, "Value"), typeof(object))
-                       , Expression.Convert(Expression.Constant(prop.DefaultValue), typeof(object))
-                   );
-                }
-                else if (prop.PropertyType == typeof(string))
-                {
-
-                    valueExpr = Expression.Condition(
-                        Expression.Equal(valueExpr, Expression.Constant(null, typeof(string)))
-                        , Expression.Constant(string.Empty)
-                        , valueExpr
-                    );
-                }
-
-
-            }
-            codes.Add(Expression.Assign(Expression.PropertyOrField(paramExpr, "Value"), Expression.Convert(valueExpr,typeof(object))));
-            codes.Add(Expression.Call(Expression.Property(cmdExpr,"Parameters"),AddParameterMethodInfo,paramExpr));
-            //DbParameter par;
-            //par.Value
-        }
-
-        #endregion
     }
 }

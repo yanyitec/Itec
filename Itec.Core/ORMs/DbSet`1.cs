@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Itec.ORMs
 {
-    public class QueryableSet<T>:Datas.Dataset<T>,IDbSet<T>,IFilterable<T>
+    public class DbSet<T>:Datas.Dataset<T>,IDbSet<T>,IFilterable<T>
         where T:class
 
     {
@@ -19,7 +19,7 @@ namespace Itec.ORMs
 
         public SQLs.SQL<T> Sql { get; private set; }
 
-        public QueryableSet(InternalDbSet<T> internalDbSet,string membersString=null):base(internalDbSet.DbClass as Metas.IMetaClass<T>)
+        public DbSet(InternalDbSet<T> internalDbSet,string membersString=null):base(internalDbSet.DbClass as Metas.IMetaClass<T>)
         {
             this.InternalDbSet = internalDbSet;
             this.Sql = membersString==null? internalDbSet.Sql:internalDbSet.GetSQLObject(membersString);
@@ -40,7 +40,7 @@ namespace Itec.ORMs
 
         static List<T> InternalRead(IDataset<T> ds)
         {
-            var dbset = (ds as QueryableSet<T>);
+            var dbset = (ds as DbSet<T>);
             using (var conn = dbset.Database.CreateConnection())
             {
                 conn.Open();
@@ -55,7 +55,7 @@ namespace Itec.ORMs
 
         static async Task<List<T>> InternalReadAsync(IDataset<T> ds)
         {
-            var dbset = (ds as QueryableSet<T>);
+            var dbset = (ds as DbSet<T>);
             using (var conn = dbset.Database.CreateConnection())
             {
                 await conn.OpenAsync();
@@ -106,6 +106,8 @@ namespace Itec.ORMs
 
         
         public int SkipCount { get; set; }
+
+        IDbClass IDbSet.DbClass => this.DbClass;
 
         public IDbSet<T> Take(int size)
         {
@@ -166,15 +168,98 @@ namespace Itec.ORMs
         }
 
 
-        IDbClass IDbSet.DbClass => InternalDbSet.DbClass;
+        //IDbClass IDbSet.DbClass => InternalDbSet.DbClass;
 
-        public IDbSet<T> Insert(T data, IDbTransaction trans = null) {
-            this.InternalDbSet.Insert(data,trans);
+        public IDbSet<T> Insert(T data, IDbTransaction trans = null)
+        {
+            if (trans != null)
+            {
+                System.Data.Common.DbConnection conn = trans?.DbConnection;
+                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
+
+                if (this.Sql.Insert.Execute(data, conn, dbTran)) return this;
+                throw new Exception("Insert nothing.");
+            }
+            else
+            {
+                using (var conn = this.Database.CreateConnection())
+                {
+                    conn.Open();
+                    if (this.Sql.Insert.Execute(data, conn, null)) return this;
+                    throw new Exception("Insert nothing.");
+                }
+            }
+
+        }
+
+
+        public async Task<IDbSet<T>> InsertAsync(T data, IDbTransaction trans = null)
+        {
+            if (trans != null)
+            {
+                System.Data.Common.DbConnection conn = trans?.DbConnection;
+                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
+
+                if (!await this.Sql.Insert.ExecuteAsync(data, conn, dbTran)) return this;
+                else throw new Exception("Insert nothing.");
+            }
+            else
+            {
+                using (var conn = this.Database.CreateConnection())
+                {
+                    await conn.OpenAsync();
+                    if (await this.Sql.Insert.ExecuteAsync(data, conn, null)) {
+                        return this;
+                    }
+                    throw new Exception("Insert nothing.");
+                }
+            }
+
+        }
+
+        public IDbSet<T> Update(T data, IDbTransaction trans = null)
+        {
+            if (trans != null)
+            {
+                System.Data.Common.DbConnection conn = trans?.DbConnection;
+                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
+
+                this.Sql.Update.Execute(this.QueryExpression, data, conn, dbTran);
+                
+            }
+            else
+            {
+                using (var conn = this.Database.CreateConnection())
+                {
+                    conn.Open();
+                    this.Sql.Update.Execute(this.QueryExpression, data, conn, null);
+                }
+            }
             return this;
         }
-        public async Task<IDbSet<T>> InsertAsync(T data, IDbTransaction trans = null) {
-            await this.InternalDbSet.InsertAsync(data,trans);
+
+
+        public async Task<IDbSet<T>> UpdateAsync(T data, IDbTransaction trans = null)
+        {
+            if (trans != null)
+            {
+                System.Data.Common.DbConnection conn = trans?.DbConnection;
+                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
+
+                await this.Sql.Update.ExecuteAsync(this.QueryExpression,data, conn, dbTran);
+                return this;
+                
+            }
+            else
+            {
+                using (var conn = this.Database.CreateConnection())
+                {
+                    await conn.OpenAsync();
+                    await this.Sql.Update.ExecuteAsync(this.QueryExpression,data, conn, null);
+                }
+            }
             return this;
+
         }
 
         public IDbSet<T> Query(Expression<Func<T, bool>> criteria)

@@ -38,7 +38,7 @@ namespace Itec.ORMs
         {
             var t = typeof(T);
             var internalSet= _DbSets.GetOrAdd(t.Name,(tx)=>new InternalDbSet<T>(this,this.MetaFactory.GetClass<T>() as IDbClass) ) as InternalDbSet<T>;
-            return new QueryableSet<T>(internalSet);
+            return new DbSet<T>(internalSet);
         }
 
         public DbConnection CreateConnection() {

@@ -81,51 +81,15 @@ namespace Itec.ORMs.SQLs
             cmd.CommandType = System.Data.CommandType.Text;
             var sql = GetSql(filterable, cmd);
             cmd.CommandText = sql;
-            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),sql);
+            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),"SQL executing:[{0}]",sql);
             return cmd;
         }
 
-        string _fields;
-        public string SqlFields {
-            get {
-                if (_fields == null)
-                {
-                    lock (this)
-                    {
-                         this.BuildTbAndFieldsSql();
-                    }
-                }
-                return _fields;
-            }
-        }
-        string _tbAndFields;
-        string _tbAndFieldsWithWhere;
-
-        protected string BuildTbAndFieldsSql() {
-            var fields = string.Empty;
-            foreach (var pair in this.Sql.AllowedProps)
-            {
-                var prop = pair.Value;
-                var fieldname = this.Sql.DbTrait.SqlFieldname(prop.Field.Name);
-                if (fields != string.Empty) fields += ",";
-                fields += fieldname;
-            }
-            _fields = fields;
-            _tbAndFields = $"SELECT {fields} FROM {this.Sql.Tablename(true)} ";
-            _tbAndFieldsWithWhere = _tbAndFields + " WHERE ";
-
-            return _tbAndFieldsWithWhere;
-        }
+        
 
         protected string GetSql(IFilterable<T> filterable, DbCommand cmd)
         {
-            if (_tbAndFieldsWithWhere == null)
-            {
-                lock (this)
-                {
-                    if (_tbAndFieldsWithWhere == null)  this.BuildTbAndFieldsSql();
-                }
-            }
+            
             var expr = filterable.QueryExpression;
             var wOpts = new WhereOpts();
             string where=null;
@@ -140,10 +104,10 @@ namespace Itec.ORMs.SQLs
             {
                 orderBy = this.Sql.DbTrait.SqlFieldname(this.SqlWhere((filterable.DescendingExpression.Body as UnaryExpression).Operand, cmd, wOpts)) + " DESC";
             }
-            if(where==null && orderBy==null && filterable.SkipCount<-0 && filterable.TakeCount<=0)  return _tbAndFields;
+            if(where==null && orderBy==null && filterable.SkipCount<-0 && filterable.TakeCount<=0)  return this.Sql.SqlTableAndFields;
             return this.Sql.DbTrait.SqlPaginate(
                 this.Sql.Tablename(true),
-                this._fields,
+                this.Sql.SqlFields,
                 where,
                 orderBy,
                 filterable.TakeCount,

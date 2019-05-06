@@ -66,7 +66,7 @@ namespace Itec.ORMs.SQLs
                 if (_SelectSql == null) {
                     lock (this) {
                         if (_SelectSql == null) {
-                            var sqltext = this.BuildTbAndFieldsSql();
+                            var sqltext = this.Sql.SqlTableAndFieldsWithWhere;
                             var pk = this.Primary = this.Sql.DbClass.FieldedProps.Values.FirstOrDefault(p => p.Field.IsPrimary);
                             if (this.Sql.DbTrait.ParametricKind == SqlParametricKinds.Value)
                             {

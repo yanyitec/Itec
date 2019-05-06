@@ -15,7 +15,7 @@ namespace Itec.ORMs
     /// <summary>
     /// 实体集
     /// </summary>
-    public class InternalDbSet<T> :  IDbSet<T> where T:class
+    public class InternalDbSet<T> :IDbSet   where T:class
     {
         public Database Database { get; private set; }
 
@@ -25,7 +25,7 @@ namespace Itec.ORMs
 
         public SQLs.SQL<T> Sql { get; protected set; }
 
-        IDbClass<T> IDbSet<T>.DbClass => throw new NotImplementedException();
+        //IDbClass<T> IDbSet<T>.DbClass => this.DbClass as IDbClass<T>;
 
         public InternalDbSet(Database db,IDbClass dbCls) {
             this.Database = db;
@@ -54,92 +54,60 @@ namespace Itec.ORMs
 
 
         public IDbSet<T> Insert(T data, IDbTransaction trans=null) {
-            if (trans != null)
-            {
-                System.Data.Common.DbConnection conn = trans?.DbConnection;
-                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
-
-                if (this.Sql.Insert.Execute(data, conn, dbTran)) { }
-                return this;
-            }
-            else {
-                using (var conn = this.Database.CreateConnection()) {
-                    conn.Open();
-                    if (this.Sql.Insert.Execute(data, conn, null)) { }
-                    return this;
-                }
-            }
+            return new DbSet<T>(this).Insert(data,trans);
             
         }
 
 
         public async Task<IDbSet<T>> InsertAsync(T data, IDbTransaction trans = null) {
-            if (trans != null)
-            {
-                System.Data.Common.DbConnection conn = trans?.DbConnection;
-                System.Data.Common.DbTransaction dbTran = trans?.DbTransaction;
-
-                if (!await this.Sql.Insert.ExecuteAsync(data, conn, dbTran)) { }
-                return this;
-            }
-            else
-            {
-                using (var conn = this.Database.CreateConnection())
-                {
-                    await conn.OpenAsync();
-                    if (!await this.Sql.Insert.ExecuteAsync(data, conn, null)) {
-
-
-                    }
-                    return this;
-                }
-            }
+            var dbset = new DbSet<T>(this);
+            return await dbset.InsertAsync(data, trans);
 
         }
 
         public IDbSet<T> MembersString(string membersString)
         {
-            return new QueryableSet<T>(this,membersString);
+            return new DbSet<T>(this,membersString);
         }
 
         public IDbSet<T> Query(Expression<Func<T, bool>> criteria)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.QueryExpression = criteria;
             return result;
         }
 
         public IDbSet<T> Ascending(Expression<Func<T, object>> expr)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.AscendingExpression = expr;
             return result;
         }
 
         public IDbSet<T> Descending(Expression<Func<T, object>> expr)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.DescendingExpression = expr;
             return result;
         }
 
         public IDbSet<T> Take(int size)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.TakeCount = size;
             return result;
         }
 
         public IDbSet<T> Skip( int count)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.SkipCount = count;
             return result;
         }
 
         public IDbSet<T> Page( int index, int size = 10)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.Page(index,size);
             return result;
         }
@@ -151,7 +119,7 @@ namespace Itec.ORMs
 
         public IDbSet<T> AndAlso(Expression<Func<T, bool>> criteria)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.AndAlso(criteria);
             return result;
         }
@@ -160,13 +128,13 @@ namespace Itec.ORMs
 
         public IDbSet<T> OrElse(Expression<Func<T, bool>> criteria)
         {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             result.OrElse(criteria);
             return result;
         }
 
         public IDbSet<T> Load() {
-            var result = new QueryableSet<T>(this);
+            var result = new DbSet<T>(this);
             return result.Load();
         }
 
@@ -175,6 +143,8 @@ namespace Itec.ORMs
                 return this.Count();
             }
         }
+
+        
 
         public int Count(IDbTransaction tran=null)
         {
