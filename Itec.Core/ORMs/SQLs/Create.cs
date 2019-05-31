@@ -29,8 +29,9 @@ namespace Itec.ORMs.SQLs
         {
             var sql = this.CreateTableSql();
             var cmd = this.Sql.DbTrait.CreateDbCommand(conn, sql);
-            await cmd.ExecuteNonQueryAsync();
             this.Sql.Database.Logger.Debug(sql);
+            await cmd.ExecuteNonQueryAsync();
+            
         }
 
         public string CreateTableSql()

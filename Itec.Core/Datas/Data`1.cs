@@ -10,7 +10,6 @@ using System.Text;
 namespace Itec.Datas
 {
     public class Data<T>:DynamicObject,IData<T>
-        where T : class
     {
         protected Func<T> GetObject { get; set; }
         public IMetaClass<T> MetaClass { get; private set; }

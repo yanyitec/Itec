@@ -1,25 +1,27 @@
-﻿using Itec.Metas;
-using System.Threading.Tasks;
+﻿//using Itec.Metas;
+//using System.Threading.Tasks;
 
 
-namespace Itec.ORMs
-{
-    public interface IDbSet
-    {
-        Database Database { get; }
-        IDbClass DbClass { get; }
-        int Length { get; }
-        int Count(IDbTransaction tran=null);
+//namespace Itec.ORMs
+//{
+//    public interface IDbSet
+//    {
+//        Database Database { get; }
+//        IDbClass DbClass { get; }
+//        int Length { get; }
 
-        Task<int> CountAsync(IDbTransaction tran=null);
+        
+//        int Count(IDbTransaction tran=null);
 
-        //SQLs.SQL Sql { get; }
+//        Task<int> CountAsync(IDbTransaction tran=null);
 
-        //string Tablename { get; }
+//        //SQLs.SQL Sql { get; }
 
-        //string SqlTablename { get; }
+//        //string Tablename { get; }
+
+//        //string SqlTablename { get; }
 
 
 
-    }
-}
+//    }
+//}

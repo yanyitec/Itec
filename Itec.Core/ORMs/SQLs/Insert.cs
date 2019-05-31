@@ -25,19 +25,19 @@ namespace Itec.ORMs.SQLs
 
         
 
-        public bool Execute(T data,DbConnection conn, DbTransaction trans) {
+        public int Execute(T data,DbConnection conn, DbTransaction trans) {
 
             var cmd = BuildCommand(data,conn,trans);
             var effectCount = cmd.ExecuteNonQuery();
             this.Sql.Database.Logger.Debug("SQL effects={1}[{0}]", cmd.CommandText, effectCount);
-            return effectCount==1;
+            return effectCount;
         }
 
-        public async Task<bool> ExecuteAsync(T data, DbConnection conn, DbTransaction trans) {
+        public async Task<int> ExecuteAsync(T data, DbConnection conn, DbTransaction trans) {
             var cmd = BuildCommand(data, conn, trans);
             var effectCount = await cmd.ExecuteNonQueryAsync();
             this.Sql.Database.Logger.Debug("SQL effects={1}[{0}]", cmd.CommandText, effectCount);
-            return effectCount == 1;
+            return effectCount;
         }
 
         public DbCommand BuildCommand(T data, DbConnection conn, DbTransaction trans) {

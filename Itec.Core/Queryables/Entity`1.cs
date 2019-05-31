@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Itec.Entities
+namespace Itec
 {
     public class Entity<T>
     {

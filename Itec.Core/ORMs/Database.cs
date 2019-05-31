@@ -1,5 +1,6 @@
 ﻿using Itec.Logs;
 using Itec.Metas;
+using Itec.ORMs.SQLs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,13 +17,13 @@ namespace Itec.ORMs
             this.Settings = settings;
             this.Trait = trait;
             this.MetaFactory = metaFactory ?? DbClassFactory.Default;
-            _DbSets = new ConcurrentDictionary<string, IDbSet>();
+            _Repositories = new ConcurrentDictionary<string, IDbRepository>();
             this.Logger = logger ?? Itec.Logs.Logger.Default;
         }
 
         public Database()
         {
-            _DbSets = new ConcurrentDictionary<string, IDbSet>();
+            _Repositories = new ConcurrentDictionary<string, IDbRepository>();
         }
 
         public ILogger Logger { get; private set; }
@@ -32,13 +33,12 @@ namespace Itec.ORMs
 
         
 
-        ConcurrentDictionary<string, IDbSet> _DbSets;
-        public IDbSet<T> DbSet<T>()
-            where T:class
+        ConcurrentDictionary<string, IDbRepository> _Repositories;
+        public IDbRepository<T> Repository<T>()
         {
             var t = typeof(T);
-            var internalSet= _DbSets.GetOrAdd(t.Name,(tx)=>new InternalDbSet<T>(this,this.MetaFactory.GetClass<T>() as IDbClass) ) as InternalDbSet<T>;
-            return new DbSet<T>(internalSet);
+            return _Repositories.GetOrAdd(t.Name,(tx)=>new DbRepository<T>(new SQLBag<T>(this,this.MetaFactory.GetClass<T>() as IDbClass<T>)) as IDbRepository<T>) as IDbRepository<T>;
+            
         }
 
         public DbConnection CreateConnection() {
@@ -119,155 +119,55 @@ namespace Itec.ORMs
             return count;
         }
 
-        public bool CheckTableExists<T>() where T:class {
-            var model = this.DbSet<T>();
-            var sql  = this.Trait.CheckTableExistsSql(model.Sql.Tablename());
-            this.Logger.Debug(sql);
-            return this.ExecuteNonQuery(sql)==1;
-        }
-
-        public async Task<bool> CheckTableExistsAsync<T>() where T : class
-        {
-            var model = this.DbSet<T>();
-            var sql = this.Trait.CheckTableExistsSql(model.Sql.Tablename());
-            this.Logger.Debug(sql);
-            return await this.ExecuteNonQueryAsync(sql) == 1;
-        }
+       
 
         public void CreateTable<T>() where T:class{
-            var model = this.DbSet<T>();
-            var sql = model.Sql.Create.CreateTableSql();
-            this.Logger.Debug(sql);
-            this.ExecuteNonQuery(sql);
+            var model = this.Repository<T>();
+            model.CreateTable();
         }
 
         public async Task CreateTableAsync<T>() where T : class
         {
-            var model = this.DbSet<T>();
-            var sql = model.Sql.Create.CreateTableSql();
-            this.Logger.Debug(sql);
-            await this.ExecuteNonQueryAsync(sql);
+            await this.Repository<T>().CreateTableAsync();
         }
 
-        public void DropTable<T>() where T : class {
-            var model = this.DbSet<T>();
-            var tb = model.Sql.Tablename(true);
-            var sql = $"DROP TABLE {tb}";
-            this.Logger.Debug(sql);
-            this.ExecuteNonQuery(sql);
+        public bool TableExists<T>()
+        {
+            return this.Repository<T>().TableExists();
+        }
+
+        public async Task<bool> TableExistsAsync<T>()
+        {
+            return await this.Repository<T>().TableExistsAsync();
+        }
+
+        public void DropTable<T>(){
+            this.Repository<T>().DropTable();
         }
 
         public async Task DropTableAsync<T>() where T : class
         {
-            var model = this.DbSet<T>();
-            var tb = model.Sql.Tablename(true);
-            var sql = $"DROP TABLE {tb}";
-            this.Logger.Debug(sql);
-            await this.ExecuteNonQueryAsync(sql);
+            await this.Repository<T>().DropTableAsync();
         }
 
         public void DropTableIfExists<T>() where T : class
         {
-            var model = this.DbSet<T>();
-
-            var tb =model.Sql.Tablename(false);
-            var checkSql = this.Trait.CheckTableExistsSql(tb);
-            var dropSql = $"DROP TABLE {this.Trait.SqlTablename(tb)}";
-            using (var conn = this.CreateConnection()) {
-                conn.Open();
-                using (var tran = conn.BeginTransaction()) {
-                    try {
-                        
-                        var ckCmd = conn.CreateCommand();
-                        ckCmd.CommandText = checkSql;
-                        ckCmd.CommandType = System.Data.CommandType.Text;
-                        ckCmd.Transaction = tran;
-                        this.Logger.Debug(checkSql);
-                        var tbExisted = false;
-                        using (var rs = ckCmd.ExecuteReader()) {
-                            if (rs.Read()) {
-                                tbExisted = rs.GetInt32(0)==1;
-                            }
-                        }
-                            
-                        if (tbExisted)
-                        {
-                            var dropCmd = conn.CreateCommand();
-                            dropCmd.CommandText = dropSql;
-                            this.Logger.Debug(dropSql);
-                            dropCmd.CommandType = System.Data.CommandType.Text;
-                            dropCmd.Transaction = tran;
-                            dropCmd.ExecuteNonQuery();
-                        }
-                        tran.Commit();
-                    } catch(Exception ex) {
-                        this.Logger.Error(ex);
-                        tran.Rollback();
-                        throw;
-                    }
-                    
-                }
-            }
+            this.Repository<T>().DropTableIfExists();
         }
 
         public async Task DropTableIfExistsAsync<T>() where T : class
         {
-            var model = this.DbSet<T>();
-
-            var tb = model.Sql.Tablename(false);
-            var checkSql = this.Trait.CheckTableExistsSql(tb);
-            var dropSql = $"DROP TABLE ${this.Trait.SqlTablename(tb)}";
-            using (var conn = this.CreateConnection())
-            {
-                await conn.OpenAsync();
-                using (var tran =conn.BeginTransaction())
-                {
-                    try
-                    {
-                        var ckCmd = conn.CreateCommand();
-                        ckCmd.CommandText = checkSql;
-                        ckCmd.CommandType = System.Data.CommandType.Text;
-                        ckCmd.Transaction = tran;
-                        this.Logger.Debug(checkSql);
-                        var tbExisted = false;
-                        using (var rs = await ckCmd.ExecuteReaderAsync())
-                        {
-                            if (await rs.ReadAsync())
-                            {
-                                tbExisted = rs.GetInt32(0) == 1;
-                            }
-                        }
-                        if (tbExisted)
-                        {
-                            var dropCmd = conn.CreateCommand();
-                            dropCmd.CommandText = dropSql;
-                            dropCmd.CommandType = System.Data.CommandType.Text;
-                            dropCmd.Transaction = tran;
-                            this.Logger.Debug(dropSql);
-                            await dropCmd.ExecuteNonQueryAsync();
-                        }
-                        tran.Commit();
-                    }
-                    catch(Exception ex)
-                    {
-                        this.Logger.Error(ex);
-                        tran.Rollback();
-                        throw;
-                    }
-
-                }
-            }
+            await this.Repository<T>().DropTableIfExistsAsync();
         }
 
-        IList<DbField> QueryFields<T>() where T:class
+        public IList<DbField> QueryFields<T>() where T:class
         {
-            var dbset = this.DbSet<T>();
-            var sql = this.Trait.QueryFieldsSql(dbset.Sql.Tablename(false));
-            var result = new List<DbField>();
-            this.ExecuteQuery(sql, (reader) => {
-                result.Add(this.Trait.MakeField(reader));
-            });
-            return result;
+            return this.Repository<T>().QueryFields();
+        }
+
+        public async Task<IList<DbField>> QueryFieldsAsync<T>() where T : class
+        {
+            return await this.Repository<T>().QueryFieldsAsync();
         }
 
 
@@ -282,17 +182,17 @@ namespace Itec.ORMs
             return db;
         }
 
-        public static IDbSet<T> GetDbSet<T>(string dbName)
+        public static IDbRepository<T> GetRepository<T>(string dbName)
             where T:class
         {
             if (dbName != null)
             {
                 var db = Database.GetByName(dbName);
-                return db.DbSet<T>();
+                return db.Repository<T>();
             }
             else {
                 foreach (var pair in Databases) {
-                    var m = pair.Value.DbSet<T>();
+                    var m = pair.Value.Repository<T>();
                     if (m != null) return m;
                 }
                 return null;

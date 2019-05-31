@@ -114,7 +114,10 @@ namespace Itec.ORMs.SQLs
                     var member = this.Sql.AllowedProps.Values.FirstOrDefault(p=>p.Name==m.Member.Name);
                     opts.LastProp = member;
                     return this.Sql.DbTrait.SqlFieldname(member.Field.Name);
-                    
+                case ExpressionType.Convert:
+                    var cexp = exp as UnaryExpression;
+                    return SqlWhere(cexp.Operand, cmd, opts);
+
                 case ExpressionType.Call:
                     var method = exp as MethodCallExpression;
                     switch (method.Method.Name)

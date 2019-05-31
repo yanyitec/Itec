@@ -11,12 +11,13 @@ namespace Itec.ORMs.SQLs
 {
     public class SQL<T>
     {
-        public SQL(string membersString, Database db, IDbClass dbClass)
+        public SQL(string membersString, SQLBag<T> sqlBag)
         {
-            this.Database = db;
-            this.DbSettings = db.Settings;
-            this.DbTrait = db.Trait;
-            this.DbClass = dbClass;
+            this.SqlBag = sqlBag;
+            this.Database = sqlBag.Database;
+            this.DbSettings = this.Database.Settings;
+            this.DbTrait = this.Database.Trait;
+            this.DbClass = sqlBag.DbClass;
             this.FieldedProps = this.DbClass.FieldedProps;
 
             this.MembersString = membersString??string.Empty;
@@ -39,6 +40,7 @@ namespace Itec.ORMs.SQLs
                     }
 
                 }
+                if (!props.ContainsKey(this.DbClass.PrimaryProperty.Name)) props.Add(this.DbClass.PrimaryProperty.Name,this.DbClass.PrimaryProperty);
             }
             
 
@@ -48,14 +50,18 @@ namespace Itec.ORMs.SQLs
             this.Insert = new Insert<T>(this);
             this.Select = new Select<T>(this);
             this.Count = new Count<T>(this);
+            this.Get = new Get<T>(this);
             this.GetById = new GetById<T>(this);
             this.Update = new Update<T>(this);
+            this.Save = new Save<T>(this);
+            this.Delete = new Delete<T>(this);
+            this.DeleteById = new DeleteById<T>(this);
             //this.Select = new Select(model, membersString);
         }
         public Database Database { get; private set; }
 
         public IDbClass DbClass { get; private set; }
-
+        public SQLBag<T> SqlBag { get; private set; }
 
         public DbSettings DbSettings { get; private set; }
 
@@ -77,11 +83,7 @@ namespace Itec.ORMs.SQLs
         public string Tablename( bool withSqlChar = false)
         {
 
-            string tbName = this.DbClass.GetAttribute<DbTableAttribute>()?.Name ?? this.DbClass.Name;
-            var prefix = this.Database.Settings.TablePrefix;
-            if (!string.IsNullOrWhiteSpace(prefix)) tbName = prefix + tbName;
-            if (!withSqlChar) return tbName;
-            return this.DbTrait.SqlTablename(tbName);
+            return this.SqlBag.Tablename(withSqlChar);
         }
 
         string _fields;
@@ -154,19 +156,19 @@ namespace Itec.ORMs.SQLs
         #region Command Builder
         Action<T, DbCommand> _ParametersBuilder;
 
-        public void BuildParameters(DbCommand cmd, T data)
+        public void BuildParameters(DbCommand cmd, T data,IDbProperty constProp=null)
         {
             if (this.DbTrait.ParametricKind == SqlParametricKinds.Value) return;
             if (_ParametersBuilder == null)
             {
                 lock (this)
                 {
-                    if (_ParametersBuilder == null) _ParametersBuilder = GenParametersBuilder();
+                    if (_ParametersBuilder == null) _ParametersBuilder = GenParametersBuilder(constProp);
                 }
             }
             _ParametersBuilder(data, cmd);
         }
-        Action<T, DbCommand> GenParametersBuilder()
+        Action<T, DbCommand> GenParametersBuilder(IDbProperty constProp)
         {
             ParameterExpression cmdExpr = Expression.Parameter(typeof(DbCommand), "cmd");
             ParameterExpression dataExpr = Expression.Parameter(typeof(T), "data");
@@ -177,6 +179,9 @@ namespace Itec.ORMs.SQLs
             {
                 var prop = pair.Value;
                 GenParam(prop.Field.Name, prop, dataExpr, cmdExpr, codes, locals);
+            }
+            if(constProp!=null && !this.AllowedProps.ContainsKey(constProp.Name) ){
+                GenParam(constProp.Field.Name, constProp, dataExpr, cmdExpr, codes, locals);
             }
 
             var block = Expression.Block(locals, codes);
@@ -259,11 +264,15 @@ namespace Itec.ORMs.SQLs
 
         public GetById<T> GetById { get; private set; }
 
+        public Get<T> Get { get; private set; }
+
         public Update<T> Update { get; private set; }
 
+        public Save<T> Save{get;private set;}
 
+        public Delete<T> Delete{get;private set;}
 
-        //public Where Where { get; private set; }
+        public DeleteById<T> DeleteById { get; private set; }
 
         
 

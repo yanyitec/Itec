@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Itec.ORMs.SQLs
 {
-    public class GetById<T>:Select<T>
+    public class Get<T>:Select<T>
     {
         public IDbProperty Primary { get; private set; }
-        public GetById(SQL<T> sql) : base(sql) {
+        public Get(SQL<T> sql) : base(sql) {
            
         }
 
-        public T Execute(object id, DbConnection conn,DbTransaction tran) {
-            var cmd = this.BuildCommand(id,conn);
+        public T Execute(Expression<Func<T,bool>> exp, DbConnection conn,DbTransaction tran) {
+            var cmd = this.BuildCommand(exp,conn);
             this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),cmd.CommandText);
             cmd.Transaction = tran;
             using (var reader = cmd.ExecuteReader()) {
@@ -24,9 +25,9 @@ namespace Itec.ORMs.SQLs
             }
         }
 
-        public async Task<T> ExecuteAsync(object id, DbConnection conn,DbTransaction tran)
+        public async Task<T> ExecuteAsync(Expression<Func<T, bool>> exp, DbConnection conn,DbTransaction tran)
         {
-            var cmd = this.BuildCommand(id, conn);
+            var cmd = this.BuildCommand(exp,conn);
             this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters), cmd.CommandText);
             cmd.Transaction = tran;
             using (var reader = await cmd.ExecuteReaderAsync())
@@ -36,22 +37,9 @@ namespace Itec.ORMs.SQLs
             }
         }
 
-        DbCommand BuildCommand(object id, DbConnection conn) {
+        DbCommand BuildCommand(Expression<Func<T, bool>> exp,DbConnection conn) {
             var cmd = conn.CreateCommand();
-            if (this.Sql.DbTrait.ParametricKind == SqlParametricKinds.Value)
-            {
-                cmd.CommandText = this.SelectSql + $"'{SQL<T>.SqlValue(id,false)}'";
-            }
-            
-            else
-            {
-                cmd.CommandText = this.SelectSql;
-                var par = cmd.CreateParameter();
-                par.ParameterName = "@p0";
-                par.DbType = this.Primary.Field.DbType;
-                par.Value = id;
-                cmd.Parameters.Add(par);
-            }
+            cmd.CommandText = base.SqlWhere(exp,cmd,null);
             cmd.CommandType = System.Data.CommandType.Text;
             cmd.Connection = conn;
             return cmd;
@@ -70,15 +58,15 @@ namespace Itec.ORMs.SQLs
                             var pk = this.Primary = this.Sql.DbClass.GetPrimaryProperty();
                             if (this.Sql.DbTrait.ParametricKind == SqlParametricKinds.Value)
                             {
-                                sqltext += $" {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=";
+                                sqltext += $" WHERE {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=";
                             }
                             else if (this.Sql.DbTrait.ParametricKind == SqlParametricKinds.At)
                             {
-                                sqltext += $" {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=@p0";
+                                sqltext += $" WHERE {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=@p0";
                             }
                             else
                             {
-                                sqltext += $" {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=?";
+                                sqltext += $" WHERE {this.Sql.DbTrait.SqlFieldname(pk.Field.Name)}=?";
                             }
                             this._SelectSql = sqltext;
                         }

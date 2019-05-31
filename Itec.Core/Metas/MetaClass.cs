@@ -19,20 +19,43 @@ namespace Itec.Metas
             this._Props = new Dictionary<string, IMetaProperty>();
             this._Methods = new Dictionary<string, MetaMethods>();
             this._PropNames = new List<string>();
-            var members = this.Type.GetMembers();
+            var types = new Stack<Type>();
+            
+            var t = this.Type;
+            while (t != typeof(object)) {
+                types.Push(t);
+                t = t.BaseType;
+            }
+            for (int i = 0, j = types.Count; i < j; i++) {
+                t = types.Pop();
+                var props = t.GetMembers();
+                foreach (var member in props)
+                {
+
+                    if (member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property)
+                    {
+                        var prop = this.CreateProperty(member);
+                        if (prop != null)
+                        {
+                            if (this._Props.ContainsKey(prop.Name))
+                            {
+                                this._Props[prop.Name] = prop;
+                            }
+                            else {
+                                this._Props.Add(prop.Name, prop);
+                                this._PropNames.Add(prop.Name);
+                            }
+                            
+                        }
+                    }
+                    
+                }
+            }
+            var members = this.Type.GetMethods();
             
             foreach (var member in members) {
                 
-                if (member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property)
-                {
-                    var prop = this.CreateProperty(member);
-                    if (prop != null)
-                    {
-                        this._Props.Add(prop.Name, prop);
-                        this._PropNames.Add(prop.Name);
-                    }
-                }
-                else if (member.MemberType == MemberTypes.Method) {
+                if (member.MemberType == MemberTypes.Method) {
                     
                     var method = this.CreateMethod(member as MethodInfo);
                     if (method != null) {

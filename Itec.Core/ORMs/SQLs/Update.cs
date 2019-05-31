@@ -28,6 +28,7 @@ namespace Itec.ORMs.SQLs
         {
 
             var cmd = BuildCommand(expr, entity, conn, trans);
+            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),cmd.CommandText);
             var effectCount= cmd.ExecuteNonQuery();
             this.Sql.Database.Logger.Debug("Effect Count={1}[{0}]",cmd.CommandText,effectCount);
             return effectCount;
@@ -36,6 +37,7 @@ namespace Itec.ORMs.SQLs
         public async Task<int> ExecuteAsync(Expression expr, T entity, DbConnection conn, DbTransaction trans)
         {
             var cmd = BuildCommand(expr, entity, conn, trans);
+            this.Sql.Database.Logger.DebugDetails(new ParametersLogSerializer(cmd.Parameters),cmd.CommandText);
             var effectCount = await cmd.ExecuteNonQueryAsync();
             this.Sql.Database.Logger.Debug("Effect Count={1}[{0}]", cmd.CommandText, effectCount);
             return effectCount;
@@ -60,7 +62,7 @@ namespace Itec.ORMs.SQLs
             }
             
             cmd.CommandText = sql;
-            this.Sql.Database.Logger.Debug("Executing[{0}]", cmd.CommandText);
+           
 
             return cmd;
         }

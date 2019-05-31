@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace Itec.Datas
 {
     public class Dataset<T> : Data<T>, IDataset<T>
-        where T : class
     {
         List<T> _Items;
 
@@ -17,7 +16,7 @@ namespace Itec.Datas
             set {
                 _Items = value;
                 if (value != null) this._Current = _Items.FirstOrDefault();
-                else this._Current = null;
+                else this._Current = default(T);
             }
         }
         T _Current;
@@ -101,7 +100,7 @@ namespace Itec.Datas
             }
             if (_Enumerator.MoveNext()) return _Enumerator.Current;
             else _Enumerator = null;
-            return null;
+            return default(T);
         }
 
         public void Each(Action<object, int> eacher)
